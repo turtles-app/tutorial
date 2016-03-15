@@ -57,21 +57,41 @@
 	margin-left: 3%;
 	border-radius: 50%;
 	background-color: red;
-	top: 15%;
+	border: 2px solid black;
+	bottom: 20px;
+	/*bottom: 500%;*/
+	/*left: 40%;*/
+}
+
+.selectedElement {
+	position: relative;
+	display: inline-block;
+	height: 32%;
+	width: 28%;
+	margin-left: 3%;
+	background-color: red;
+	border: 2px solid black;
+	border-radius: 50%;
+	/*top: 40%;*/
 }
 
 #elText {
 	position: absolute;
-	top: 5%;
-	left: 2%;
+	top: 40%;
+	left: .5%;
 
 }
 
 .elName {
 	position: absolute;
 	left: 40%;
-	top: 17%;
+	top: 20%;
 
+}
+
+.setName {
+	position: relative;
+	display: block;
 }
 
 .flashInf {

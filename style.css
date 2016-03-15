@@ -1,6 +1,6 @@
 @-webkit-keyframes fading {
     0% {opacity: 1;}
-    50% {opacity: .2;}
+    50% {opacity: .4;}
     100% {opacity: 1;}
 }
 
@@ -73,3 +73,8 @@
 	top: 17%;
 
 }
+
+.flashInf {
+	-webkit-animation: fading 2s infinite;
+	animation: fading 2s infinite;
+};

@@ -1,0 +1,3 @@
+TODO
+
+Leverage Promises to handle asynchronous toast clearing

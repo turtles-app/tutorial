@@ -5,6 +5,28 @@
 }
 
 
+#progressBar {
+	display: inline-block;
+	height: 10%;
+	width: 40%;
+	border: 2px solid black;
+}
+
+.step {
+	display: inline-block;
+	position: relative;
+	height: 30px;
+	width: 30px;
+	border: 2px solid black;
+}
+
+.incomplete {
+	background-color: red;
+}
+
+.complete {
+	background-color: green;
+}
 #midWrap {
 	display: inline-block;
 	position: absolute;
@@ -35,6 +57,16 @@
 	width: 40%;
 	left: 60%;
 	border-radius: 9%;	
+}
+
+.set {
+	position: relative;
+	display: inline-block;
+	background-color: #7689A9;
+	border: 2px solid black;
+	height: 25%;
+	width: 20%;
+
 }
 
 #elements {

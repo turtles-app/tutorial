@@ -12,6 +12,7 @@ app.config(function(toastrConfig) {
 		timeOut: 0
 	});
 });
+
 app.directive('droppableBob', function() {
 	return {
 		scope: {
@@ -121,14 +122,15 @@ app.controller("tutorialController", function($scope, toastr) {
 		openToasts.push(toastr.success('Every element is in some sets, and not in others.', "Nice!", {
 			onHidden: function(clicked) {
 				openToasts.pop();
-				console.log("Gonna push conjur toast");
-				openToasts.push(toastr.info('Now conjur Bob into existence, by dragging him to the set area', 
-					{
-						extendedTimeOut: 8000,
-						// tapToDismiss: false
-					}));
-				console.log(openToasts);
-				$scope.tut.bobFlash = true;
+				if ($scope.tut.completeSteps === 1) {
+					openToasts.push(toastr.info('Now conjur Bob into existence, by dragging him to the set area', 
+						{
+							extendedTimeOut: 8000,
+							// tapToDismiss: false
+						}));
+					console.log(openToasts);
+					$scope.tut.bobFlash = true;
+				}
 			}
 		}));
 	};
@@ -142,13 +144,34 @@ app.controller("tutorialController", function($scope, toastr) {
 					var caughtToast = openToasts.pop();
 					toastr.clear(caughtToast);
 					if (caughtToast.toastId < 2) toastr.clear(openToasts.pop());
-					openToasts.push(toastr.success("Now Bob exists, and he has x inside him. He is forever grateful.", "Congratulations!"));
+					openToasts.push(toastr.success("Now Bob exists, and he has x inside him. He is forever grateful.", "Congratulations!", {
+						onHidden: function(clicked) {
+							openToasts.pop();
+							console.log("completeSteps")
+							if ($scope.tut.completeSteps === 2) {
+								var y = new Element("y", a);
+								$scope.tut.elements.push(y);
+								openToasts.push(toastr.info("Another element has appeared! It's name is y. y is not in Bob.", "New Element", 
+								{
+									onHidden: function(clicked) {
+										console.log("hiding new element toast");
+										openToasts.pop();
+										openToasts.push(toastr.info("Now drag Bob into the Set Contents window to see what's inside him!", "Set Contents Appeared!",
+										{
+											timeOut: 8000,
+											extendedTimeOut: 5000
+										}
+											));
+									}
+								}));
+							}
+						}
+					}));
 					var bob = new Set("sets", "Bob");
 					bob.putIn(x);
 					$scope.tut.sets.push(bob);
 					$scope.tut.tab = '';
 					$scope.tut.elements.push($scope.tut.selectedElements.splice(0, 1)[0]);
-
 				}
 				break;
 		}

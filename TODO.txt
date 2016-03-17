@@ -1,3 +1,4 @@
 TODO
 
-Leverage Promises to handle asynchronous toast clearing
+Step 3: Drag Bob into set contents
+Step 4: Make custom set

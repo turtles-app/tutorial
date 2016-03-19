@@ -96,13 +96,21 @@ var setRoute = function (set) {
 //	the routes (array) attrubute is a list of
 //  representations of relationships to the sets
 //	in which the Element resides.
-var Element = function (name, set) {
+var Element = function (name, set, color) {
 	this.name = name;
 	this.groupIndex;
 	var firstRoute = new setRoute(set);
 	this.routes = [];
 	this.routes.push(firstRoute);
+	this.color = color;
+	this.opacity = null;
+	this.border = "";
+	// this.colorStyle = {
+	// 	"background-color": color
+	// }
+	// console.log(this.colorStyle);
 	set.elements.push(this);
+
 
 	this.isSet=false;
 }

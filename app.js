@@ -146,6 +146,7 @@ app.directive("droppableContents", function() {
 });
 
 app.controller("tutorialController", function($scope, toastr) {
+	
 	this.completeSteps = 0;
 	this.tab = 'bob';
 	this.sets = [];
@@ -158,11 +159,16 @@ app.controller("tutorialController", function($scope, toastr) {
 	this.contentsFlash = false;
 	this.showContents = false;
 	this.flashSetIndex = null;
+	this.colors = ['#970000','#2450AF','#CCC508','#C0009C','#EE2998','#27E493'];
+
 	// this.elStyle = "{'-webkit-animation': 'fading 4s infinite', 'animation': 'fading 4s infinite'}";
 
 
 	var a = new Set("sets", "A");
-	var x = new Element("x", a);
+	var x = new Element("x", a, $scope.tut.colors[0]);
+	var y = new Element("y", a, $scope.tut.colors[1]);
+
+	
 
 	this.elements.push(x);
 
@@ -200,7 +206,8 @@ app.controller("tutorialController", function($scope, toastr) {
 						onHidden: function(clicked) {
 							openToasts.pop();
 							if ($scope.tut.completeSteps === 2) {
-								var y = new Element("y", a);
+								
+								
 								$scope.tut.elements.push(y);
 								$scope.tut.flashSetIndex = 0;
 								openToasts.push(toastr.info("Another element has appeared! It's name is y. y is not in Bob.", "New Element", 
@@ -231,6 +238,21 @@ app.controller("tutorialController", function($scope, toastr) {
 	$scope.dropIntoContents = function (index) {
 		// console.log(index);
 		$scope.tut.contentsSet = $scope.tut.sets[index];
+		$scope.tut.elements.forEach(function(element) {
+			var opacity = element.opacity;
+			var border = element.border;
+			if ($scope.tut.contentsSet.elements.indexOf(element) > -1) {
+				opacity = ".65";
+				border = "3px dotted green";
+			}
+			else {
+				opacity = ".25";
+				border = "3px dashed blue";
+			}
+			element.opacity = opacity;
+			element.border = border;
+
+		});
 		switch ($scope.tut.completeSteps) {
 			case 2:
 				$scope.tut.completeSteps = 3;

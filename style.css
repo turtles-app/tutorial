@@ -56,8 +56,11 @@
 	height: 33%;
 	width: 40%;
 	left: 60%;
-	border-radius: 9%;	
+	border-radius: 9%;
+	padding-left: 5%;
+
 }
+
 
 .set {
 	position: relative;
@@ -79,6 +82,8 @@
 	border: 2px solid black;
 	border-radius: 9%;
 	background-color: #FFACAC;
+	padding-left: 5%;
+
 }	
 
 .element {
@@ -90,7 +95,7 @@
 	border-radius: 50%;
 	background-color: red;
 	border: 2px solid black;
-	bottom: 20px;
+	bottom: 20px; 
 	/*bottom: 500%;*/
 	/*left: 40%;*/
 }
@@ -111,6 +116,8 @@
 	position: absolute;
 	top: 40%;
 	left: .5%;
+	padding-left: 5%;
+
 
 }
 
@@ -136,6 +143,7 @@
 	width: 35%;
 	top: 65%;
 	left: 65%;
+	padding-left: 5%;
 }
 
 .contentElement {
@@ -144,17 +152,37 @@
 	background-color: red;
 	border: 2px solid black;
 	border-radius: 50%;
-	height: 19%;
-	width: 9%;
+	height: 75%;
+	width: 50%;
+	top: 6%;
 }
 
 #trueContentsText0 {
 	position: relative;
 	display: block;
-	bottom: 5%
+	width:33%;
+	height:50%;
+	bottom: 5%;
+	padding-left: 5%;
+}
+
+#trueContentsText1 {
+	width:33%;
+	height:50%;
+	background-color:  #7689A9;
 }
 
 .flashInf {
 	-webkit-animation: fading 2s infinite;
 	animation: fading 2s infinite;
 };
+
+.contained {
+	/*border:  5px solid green !important;*/
+	/*background-color: purple !important;*/
+	visibility: hidden;
+}
+
+h3 {
+	border: 2px solid black;
+}

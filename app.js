@@ -9,7 +9,9 @@ openToasts = [];
 
 app.config(function(toastrConfig) {
 	angular.extend(toastrConfig, {
-		timeOut: 0
+		timeOut: 0,
+		extendedTimeOut: 0,
+		closeButton: true
 	});
 });
 
@@ -68,7 +70,12 @@ app.directive('droppableSets', function() {
 					var id = el.getAttribute('id');
 					var fn = scope.dragover();
 					var steps = fn();
-					if (dragData.id === 'bob' && steps === 1) e.preventDefault();
+					switch (steps) {
+						case 1:
+							if(dragData.id === 'bob') e.preventDefault();
+							break;
+					}
+					// if (dragData.id === 'bob' && steps === 1) e.preventDefault();
 					return false;
 				},
 				false
@@ -95,15 +102,62 @@ app.directive('droppableSets', function() {
 	}	//return	
 });
 
+app.directive("droppableContents", function() {
+	return {
+		scope: {
+			drop: '&',
+			dragover: '&'
+		},
+		link: function (scope, element) {
+			var el = element[0];
+
+			el.addEventListener("dragover", 
+				function (e) {
+					id = el.getAttribute('id');
+					var fn = scope.dragover();
+					var steps = fn();
+					switch (steps) {
+						case 2:
+							if (dragData.id === 'Bob') e.preventDefault();
+							break;
+					}
+					return false;
+				},
+				false
+				);
+
+			el.addEventListener("drop", function (e) {
+				id = el.getAttribute('id');
+				var fn = scope.drop();
+				var index = dragData.index;
+				if ('undefined' !== typeof fn) {
+					fn(index);
+					dragData = {
+						id: '',
+						index: null
+					}
+				}
+				return false;
+			},
+			false
+			);
+		}
+	}
+});
+
 app.controller("tutorialController", function($scope, toastr) {
 	this.completeSteps = 0;
 	this.tab = 'bob';
 	this.sets = [];
 	this.elements = [];
 	this.selectedElements = [];
+	this.contentsSet = null;
 	this.elFlash = true;
 	this.bobFlash = false;
 	this.setsFlash = false;
+	this.contentsFlash = false;
+	this.showContents = false;
+	this.flashSetIndex = null;
 	// this.elStyle = "{'-webkit-animation': 'fading 4s infinite', 'animation': 'fading 4s infinite'}";
 
 
@@ -117,7 +171,6 @@ app.controller("tutorialController", function($scope, toastr) {
 		$scope.tut.completeSteps = 1;
 		$scope.tut.selectedElements.push($scope.tut.elements.splice(0, 1)[0]);
 		$scope.tut.bobFlash = false;
-		console.log(openToasts[0]);
 		toastr.clear(openToasts.pop());;
 		openToasts.push(toastr.success('Every element is in some sets, and not in others.', "Nice!", {
 			onHidden: function(clicked) {
@@ -128,7 +181,6 @@ app.controller("tutorialController", function($scope, toastr) {
 							extendedTimeOut: 8000,
 							// tapToDismiss: false
 						}));
-					console.log(openToasts);
 					$scope.tut.bobFlash = true;
 				}
 			}
@@ -147,21 +199,20 @@ app.controller("tutorialController", function($scope, toastr) {
 					openToasts.push(toastr.success("Now Bob exists, and he has x inside him. He is forever grateful.", "Congratulations!", {
 						onHidden: function(clicked) {
 							openToasts.pop();
-							console.log("completeSteps")
 							if ($scope.tut.completeSteps === 2) {
 								var y = new Element("y", a);
 								$scope.tut.elements.push(y);
+								$scope.tut.flashSetIndex = 0;
 								openToasts.push(toastr.info("Another element has appeared! It's name is y. y is not in Bob.", "New Element", 
 								{
 									onHidden: function(clicked) {
-										console.log("hiding new element toast");
 										openToasts.pop();
 										openToasts.push(toastr.info("Now drag Bob into the Set Contents window to see what's inside him!", "Set Contents Appeared!",
 										{
-											timeOut: 8000,
-											extendedTimeOut: 5000
+											extendedTimeOut: 8000
 										}
-											));
+										)); //End of toast
+										$scope.tut.showContents = true;
 									}
 								}));
 							}
@@ -177,6 +228,29 @@ app.controller("tutorialController", function($scope, toastr) {
 		}
 	}
 
+	$scope.dropIntoContents = function (index) {
+		// console.log(index);
+		$scope.tut.contentsSet = $scope.tut.sets[index];
+		switch ($scope.tut.completeSteps) {
+			case 2:
+				$scope.tut.completeSteps = 3;
+				toastr.clear(openToasts.pop());
+				break;
+		}
+		$scope.$apply();
+	};
+
+	$scope.dragOverSets = function () {
+		return $scope.tut.completeSteps;
+	};
+
+	$scope.dragOverContents = function () {
+		return $scope.tut.completeSteps;
+	}
+
+	///////////////////////////
+	// 	Drag Event Handlers  //
+	///////////////////////////
 	this.dragEl = function (ev) {
 		if ($scope.tut.tab === 'bob' && ev.target.getAttribute('id') === 'x') {
 			switch ($scope.tut.completeSteps) {
@@ -197,17 +271,18 @@ app.controller("tutorialController", function($scope, toastr) {
 			$scope.tut.bobFlash = false;
 			$scope.$apply();
 		}
-	}
+	};
 
 	this.dragBob = function (ev) {
 		dragData.id = ev.target.id;
 		dragData.index = null;
 		if ($scope.tut.completeSteps === 1) {
+			$scope.tut.bobFlash = false;
 			$scope.tut.setsFlash = true;
 			$scope.$apply();
 		}
 		
-	}
+	};
 
 	this.endDragBob = function (ev) {
 		$scope.tut.setsFlash = false;
@@ -215,11 +290,31 @@ app.controller("tutorialController", function($scope, toastr) {
 			$scope.tut.bobFlash = true;
 		}
 		$scope.$apply();
-	}
+	};
 
-	$scope.dragOverSets = function () {
-		return $scope.tut.completeSteps;
-	}
+	this.dragSet = function (ev) {
+		dragData.id = ev.target.id;
+		dragData.index = ev.target.getAttribute('index');
+		switch ($scope.tut.completeSteps) {
+			case 2:
+				$scope.tut.flashSetIndex = null;
+				$scope.tut.contentsFlash = true;
+				break;
+		}
+		$scope.$apply();
+	};
+
+	this.endDragSet = function (ev) {
+		dragData.id = null;
+		dragData.index = null;
+		$scope.tut.contentsFlash = false;
+		switch ($scope.tut.completeSteps) {
+			case 2:
+				$scope.tut.flashSetIndex = 0;	
+				break;
+		}
+		$scope.$apply();
+	};
 
 	openToasts.push(toastr.info('Drag x into Bob', 'Welcome =)'));
 });

@@ -1,4 +1,10 @@
 TODO
 
-Step 3: Drag Bob into set contents
+-	Reduce Text
 Step 4: Make custom set
+	-	Drag and drop functionality for customSet
+	-	Success toast and step++
+
+Refactorizations:
+	-	drag and drop directives
+	-	onHidden event handler nesting solution

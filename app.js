@@ -9,9 +9,10 @@ openToasts = [];
 
 app.config(function(toastrConfig) {
 	angular.extend(toastrConfig, {
-		timeOut: 0,
+		timeOut: 15000,
 		extendedTimeOut: 0,
-		closeButton: true
+		closeButton: true,
+		progressBar: true
 	});
 });
 
@@ -160,6 +161,7 @@ app.controller("tutorialController", function($scope, toastr) {
 	this.showContents = false;
 	this.flashSetIndex = null;
 	this.colors = ['#970000','#2450AF','#CCC508','#C0009C','#EE2998','#27E493'];
+	this.customSetName = '';
 
 	// this.elStyle = "{'-webkit-animation': 'fading 4s infinite', 'animation': 'fading 4s infinite'}";
 
@@ -214,7 +216,7 @@ app.controller("tutorialController", function($scope, toastr) {
 								{
 									onHidden: function(clicked) {
 										openToasts.pop();
-										openToasts.push(toastr.info("Now drag Bob into the Set Contents window to see what's inside him!", "Set Contents Appeared!",
+										openToasts.push(toastr.info("Now drag Bob into the Set Inspector window to see what's inside him!", "Set Inspector Appeared!",
 										{
 											extendedTimeOut: 8000
 										}
@@ -257,6 +259,13 @@ app.controller("tutorialController", function($scope, toastr) {
 			case 2:
 				$scope.tut.completeSteps = 3;
 				toastr.clear(openToasts.pop());
+				openToasts.push(toastr.info("The Set Inspector shows which elements are in a set", {
+					onHidden: function () {
+						toastr.clear(openToasts.pop());
+						openToasts.push(toastr.info("Name it, choose elements, and drag it to the set area", "Make your own set"));
+						$scope.tut.tab = 'customSet';
+					}
+				}));
 				break;
 		}
 		$scope.$apply();

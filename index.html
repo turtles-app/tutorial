@@ -20,16 +20,15 @@
 			<div id="midWrap">
 				<div id='bobPocket' ng-show="tut.tab==='bob'" droppable-bob drop="dropIntoBob" ondragstart="angular.element(getElementById('wrapper')).scope().tut.dragBob(event)" ondragend="angular.element(getElementById('wrapper')).scope().tut.endDragBob(event)">
 					This is a set. His name is Bob, and he doesn't exist, yet.
-					<div id="bob" draggable='true' class="customSet" ng-class="{flashInf: tut.bobFlash}"><div class="setName">Bob</div>
-						<div ng-repeat="element in tut.selectedElements" class="selectedElement"><div class="elName">{{element.name}}</div></div>
+					<div id="bob" draggable='true' class="customSet" ng-class="{flashInf: tut.bobFlash}" ng-style="{'background-color': element.color, 'opacity': element.opacity, 'border':element.border}"><div class="setName">Bob</div>
+						<div ng-repeat="element in tut.selectedElements" class="selectedElement" ng-style="{'background-color': element.color, 'opacity': element.opacity, 'border':element.border}"> ><div class="elName">{{element.name}}</div></div>
 					</div>
 				</div>
 
-				<div id="customSetPocket" ng-show="tut.tab==='customSet'" draggable="true">
-					<div id="customSet" class="customSet" ng-class="{flashInf: tut: tut.customSetFlash}">
+				<div id="customSetPocket" ng-show="tut.tab==='customSet'">
+					<div id="customSet" class="customSet"  draggable="true" ng-class="{flashInf: tut.customSetFlash}" droppable-custom drop="dropIntoCustom" ondragstart="angular.element(getElementById('wrapper')).scope().tut.dragCustom(event)" ondragend="angular.element(getElementById('wrapper')).scope().tut.endDragCustom(event)">
 						<input ng-model="tut.customSetName">	
-						{{tut.customSetName}}
-						<div ng-repeat="element in tut.selectedElements" class="selectedElement"><div class="elName">{{element.name}}</div></div>
+						<div ng-repeat="element in tut.selectedElements" class="selectedElement" ng-style="{'background-color': element.color, 'opacity': element.opacity, 'border':element.border}"><div class="elName">{{element.name}}</div></div>
 
 					</div>
 				</div>

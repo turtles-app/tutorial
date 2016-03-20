@@ -1,9 +1,13 @@
 TODO
 
 -	Reduce Text
-Step 4: Make custom set
-	-	Drag and drop functionality for customSet
-	-	Success toast and step++
+Step 7: Make an Intersection
+	-	Create intersection pocket w/ DnD
+
+General:
+	-	Step 4 handle making a new set misplay (player doesn't drag new set to setContents)
+	-	Normalize toasts
+	-	bottom % for contentsElements (has to be fixed px atm)
 
 Refactorizations:
 	-	drag and drop directives

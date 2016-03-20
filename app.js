@@ -16,7 +16,7 @@ var sortGroup = function (a, b) {
 app.config(function(toastrConfig) {
 	angular.extend(toastrConfig, {
 		timeOut: 15000,
-		extendedTimeOut: 0,
+		extendedTimeOut: 10000,
 		closeButton: true,
 		progressBar: true
 	});
@@ -130,6 +130,9 @@ app.directive("droppableContents", function() {
 						case 2:
 							if (dragData.id === 'Bob') e.preventDefault();
 							break;
+						default:
+							if (dragData.type === 'set') e.preventDefault();
+							break;
 					}
 					return false;
 				},
@@ -210,7 +213,7 @@ app.controller("tutorialController", function($scope, toastr) {
 	this.contentsFlash = false;
 	this.showContents = false;
 	this.flashSetIndex = null;
-	this.colors = ['#970000','#2450AF','#CCC508','#C0009C','#EE2998','#27E493'];
+	this.colors = ['#970000','#E6943B','#CCC508','#C0009C','#EE2998','#27E493'];
 	this.customSetName = '';
 
 	// this.elStyle = "{'-webkit-animation': 'fading 4s infinite', 'animation': 'fading 4s infinite'}";
@@ -219,9 +222,17 @@ app.controller("tutorialController", function($scope, toastr) {
 	var a = new Set("sets", "A");
 	var x = new Element("x", a, $scope.tut.colors[0]);
 	var y = new Element("y", a, $scope.tut.colors[1]);
+	var z = new Element("z", a, $scope.tut.colors[2]);
+	var p = new Element("p", a, $scope.tut.colors[3]);
+	var q = new Element("q", a, $scope.tut.colors[4]);
+	var jeffersmith = new Element("jeffersmith", a, $scope.tut.colors[5]);
 
 	x.groupIndex = 0;
 	y.groupIndex = 1;
+	z.groupIndex = 2;
+	p.groupIndex = 3;
+	q.groupIndex = 4;
+	jeffersmith.groupIndex = 5;
 
 	this.elements.push(x);
 
@@ -286,6 +297,65 @@ app.controller("tutorialController", function($scope, toastr) {
 					$scope.tut.elements.push($scope.tut.selectedElements.splice(0, 1)[0]);
 				}
 				break;
+			case 5:
+				toastr.clear(openToasts.pop());
+				if ($scope.tut.selectedElements.length > 0) {
+					if ($scope.tut.customSetName != '') {
+						var newSet = new Set("sets", $scope.tut.customSetName);
+						$scope.tut.selectedElements.forEach(function (element) {
+							newSet.putIn(element);
+						});
+						newSet.groupIndex = $scope.tut.sets.length;
+						$scope.tut.sets.push(newSet);
+						$scope.tut.elements = $scope.tut.elements.concat($scope.tut.selectedElements.splice(0, $scope.tut.selectedElements.length));
+						$scope.tut.elements.sort(sortGroup);
+						$scope.tut.customSetName = '';
+					} else {
+						toastr.clear(openToasts.pop());
+						openToasts.push(toastr.warning("You must name your set first. Type a name in the text box.", "Nice Try"));
+					}
+				} else {
+					toastr.clear(openToasts.pop());
+					openToasts.push(toastr.warning("Empty sets are funky. We'll deal with them later. Drag elements into your set first", "Nice Try"));
+				} 				
+				if ($scope.tut.sets.length === 5) {
+					openToasts.forEach(function (toast) {
+						toastr.clear(toast);
+					});
+					openToasts = []; 
+					// toastr.clear(openToasts.pop());
+					$scope.tut.completeSteps = 6;
+					openToasts.push(toastr.success("We now have 5 sets.", "Well Done!", {
+						onHidden: function () {
+							toastr.clear(openToasts.pop());
+							openToasts.push(toastr.info("You can make new sets by combining old ones. There are many different ways to combine sets", "Operations", 
+							{
+								onHidden: function () {
+									toastr.clear(openToasts.pop());
+									$scope.tut.tab = 'intersection';
+									openToasts.push(toastr.info("This is the first way making a new set from two old ones. Drag two sets into the two slots, then drag the whole intersection into the Set area", "Intersection", 
+										{
+											onHidden: function () {
+												toastr.clear(openToasts.pop());
+											}
+										}));
+								}
+							}));
+
+						}
+					}));
+				} else {
+					var step5Progress =  $scope.tut.sets.length - 2;
+					var str = step5Progress + "/3 Sets created";
+					toastr.clear(openToasts.pop());
+					openToasts.push(toastr.info(str, "Step 5 progress", 
+					{
+						onHidden: function () {
+							openToasts.pop();
+						}
+					}));
+				}
+				break;
 			default:
 				if ($scope.tut.selectedElements.length > 0) {
 					if ($scope.tut.customSetName != '') {
@@ -305,8 +375,7 @@ app.controller("tutorialController", function($scope, toastr) {
 								toastr.clear(openToasts.pop());
 								openToasts.push(toastr.success("You made a new set called " + newSet.equivalents[0] + "! Drag it into the Set Inspector"));
 								break;
-							case 3:
-							case 4:
+
 							break;
 
 						}
@@ -324,21 +393,22 @@ app.controller("tutorialController", function($scope, toastr) {
 
 	$scope.dropIntoContents = function (index) {
 		$scope.tut.contentsSet = $scope.tut.sets[index];
-		$scope.tut.elements.forEach(function(element) {
-			var opacity = element.opacity;
-			var border = element.border;
-			if ($scope.tut.contentsSet.elements.indexOf(element) > -1) {
-				opacity = ".65";
-				border = "3px dotted green";
-			}
-			else {
-				opacity = ".25";
-				border = "3px dashed blue";
-			}
-			element.opacity = opacity;
-			element.border = border;
+		// $scope.tut.elements.forEach(function(element) {
+		// 	var opacity = element.opacity;
+		// 	var border = element.border;
+		// 	if ($scope.tut.contentsSet.elements.indexOf(element) > -1) {
+		// 		opacity = ".65";
+		// 		border = "3px dotted green";
+		// 	}
+		// 	else {
+		// 		opacity = ".25";
+		// 		border = "3px dashed blue";
+		// 	}
+		// 	element.opacity = opacity;
+		// 	element.border = border;
 
-		});
+		// });
+	$scope.tut.setElementStyles();
 		switch ($scope.tut.completeSteps) {
 			case 2:
 				$scope.tut.completeSteps = 3;
@@ -348,8 +418,25 @@ app.controller("tutorialController", function($scope, toastr) {
 						toastr.clear(openToasts.pop());
 						openToasts.push(toastr.info("Name it, choose elements, and drag it to the set area", "Make your own set"));
 						$scope.tut.tab = 'customSet';
+						$scope.tut.contentsSet = null;
+						$scope.tut.clearElementStyles();
 					}
 				}));
+				break;
+			case 4:
+				if ($scope.tut.sets.length === 2) {
+					toastr.clear(openToasts.pop());
+					openToasts.push(toastr.success("Three more elements have appeared. Create three more sets", "Good!", {
+						onHidden: function() {
+							openToasts.pop();
+							$scope.tut.contentsSet = null;
+							$scope.tut.clearElementStyles();
+						}
+					}));
+					$scope.tut.completeSteps = 5;
+					$scope.tut.elements.push(z, p, q, jeffersmith);
+					$scope.tut.setElementStyles();
+				} 
 				break;
 		}
 		$scope.$apply();
@@ -464,6 +551,29 @@ app.controller("tutorialController", function($scope, toastr) {
 		dragData.index = null;
 		dragData.type = '';
 		$scope.tut.setsFlash = false;
+	};
+
+	this.setElementStyles = function() {
+
+	  $scope.tut.elements.forEach(function (element) {
+			if ($scope.tut.contentsSet.elements.indexOf(element) >= 0) {
+				element.opacity = .65;
+				element.border = "3px dashed #7689A9";
+			} else {
+				element.opacity = .25;
+				element.border = "3px dashed #FF0303";
+			}
+		});
+	  $scope.$apply();
+
+	};
+
+	this.clearElementStyles = function () {
+		$scope.tut.elements.forEach(function (element) {
+			element.opacity = 1;
+			element.border = "3px solid black";
+		});
+		// $scope.$apply();
 	};
 
 	openToasts.push(toastr.info('Drag x into Bob', 'Welcome =)'));

@@ -21,7 +21,7 @@
 				<div id='bobPocket' ng-show="tut.tab==='bob'" droppable-bob drop="dropIntoBob" ondragstart="angular.element(getElementById('wrapper')).scope().tut.dragBob(event)" ondragend="angular.element(getElementById('wrapper')).scope().tut.endDragBob(event)">
 					This is a set. His name is Bob, and he doesn't exist, yet.
 					<div id="bob" draggable='true' class="customSet" ng-class="{flashInf: tut.bobFlash}" ng-style="{'background-color': element.color, 'opacity': element.opacity, 'border':element.border}"><div class="setName">Bob</div>
-						<div ng-repeat="element in tut.selectedElements" class="selectedElement" ng-style="{'background-color': element.color, 'opacity': element.opacity, 'border':element.border}"> ><div class="elName">{{element.name}}</div></div>
+						<div ng-repeat="element in tut.selectedElements" class="selectedElement" ng-style="{'background-color': element.color, 'opacity': element.opacity, 'border':element.border}"><div class="elName">{{element.name}}</div></div>
 					</div>
 				</div>
 
@@ -50,9 +50,8 @@
 			<div id="trueContents" ng-show="tut.showContents" ng-class="{flashInf: tut.contentsFlash}" droppable-contents dragover="dragOverContents" drop="dropIntoContents">
 				<h1 id="trueContentsTitle">Set Inspector</h1>
 				<h3 id='trueContentsText0' ng-hide="tut.contentsSet">Drag a set here to see what's inside it</h3>
-				<h3 id="trueContentsText1" ng-show="tut.contentsSet">{{tut.contentsSet.equivalents[tut.contentsSet.eqActiveIndex]}}
+				<h3 id="trueContentsText1" ng-show="tut.contentsSet">{{tut.contentsSet.equivalents[tut.contentsSet.eqActiveIndex]}}</h3>
 					<div ng-repeat="element in tut.contentsSet.elements" class="contentElement" ng-style="{'background-color': element.color, 'opacity': element.opacity, 'border':element.border}"><div class="elName" >{{element.name}}</div></div>
-				</h3>
 			</div>
 		</div>
 	</div>

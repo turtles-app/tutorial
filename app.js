@@ -246,7 +246,7 @@ app.controller("tutorialController", function($scope, toastr) {
 			onHidden: function(clicked) {
 				openToasts.pop();
 				if ($scope.tut.completeSteps === 1) {
-					openToasts.push(toastr.info('Now conjur Bob into existence, by dragging him to the set area', 
+					openToasts.push(toastr.info('Now conjure Bob into existence, by dragging him to the set area', 
 						{
 							extendedTimeOut: 8000,
 							// tapToDismiss: false
@@ -272,12 +272,12 @@ app.controller("tutorialController", function($scope, toastr) {
 							if ($scope.tut.completeSteps === 2) {
 								
 								
-								$scope.tut.elements.push(y);
-								$scope.tut.flashSetIndex = 0;
-								openToasts.push(toastr.info("Another element has appeared! It's name is y. y is not in Bob.", "New Element", 
+								$scope.tut.elements.push(y, z);
+								openToasts.push(toastr.info("Two new Elements have appeared! They aren't in Bob.", "New Elements", 
 								{
 									onHidden: function(clicked) {
 										openToasts.pop();
+										$scope.tut.flashSetIndex = 0;
 										openToasts.push(toastr.info("Now drag Bob into the Set Inspector window to see what's inside him!", "Set Inspector Appeared!",
 										{
 											extendedTimeOut: 8000
@@ -301,11 +301,21 @@ app.controller("tutorialController", function($scope, toastr) {
 				toastr.clear(openToasts.pop());
 				if ($scope.tut.selectedElements.length > 0) {
 					if ($scope.tut.customSetName != '') {
+						var setIsACopy = false;
+						var copiedSet = null;
 						var newSet = new Set("sets", $scope.tut.customSetName);
 						$scope.tut.selectedElements.forEach(function (element) {
 							newSet.putIn(element);
 						});
 						newSet.groupIndex = $scope.tut.sets.length;
+
+
+						$scope.tut.sets.forEach(function(set) {
+							if (_.isEqual(set.elements, newSet.elements)) {
+								setIsACopy = true;
+								copiedSet = set;
+							}
+						});
 						$scope.tut.sets.push(newSet);
 						$scope.tut.elements = $scope.tut.elements.concat($scope.tut.selectedElements.splice(0, $scope.tut.selectedElements.length));
 						$scope.tut.elements.sort(sortGroup);
@@ -318,14 +328,14 @@ app.controller("tutorialController", function($scope, toastr) {
 					toastr.clear(openToasts.pop());
 					openToasts.push(toastr.warning("Empty sets are funky. We'll deal with them later. Drag elements into your set first", "Nice Try"));
 				} 				
-				if ($scope.tut.sets.length === 5) {
+				if ($scope.tut.sets.length === 6) {
 					openToasts.forEach(function (toast) {
 						toastr.clear(toast);
 					});
 					openToasts = []; 
 					// toastr.clear(openToasts.pop());
 					$scope.tut.completeSteps = 6;
-					openToasts.push(toastr.success("We now have 5 sets.", "Well Done!", {
+					openToasts.push(toastr.success("We now have 6 sets.", "Well Done!", {
 						onHidden: function () {
 							toastr.clear(openToasts.pop());
 							openToasts.push(toastr.info("You can make new sets by combining old ones. There are many different ways to combine sets", "Operations", 
@@ -346,12 +356,23 @@ app.controller("tutorialController", function($scope, toastr) {
 					}));
 				} else {
 					var step5Progress =  $scope.tut.sets.length - 2;
-					var str = step5Progress + "/3 Sets created";
+					var str = step5Progress + "/4 Sets created";
 					toastr.clear(openToasts.pop());
-					openToasts.push(toastr.info(str, "Step 5 progress", 
+					openToasts.push(toastr.info(str, "Step 6 progress", 
 					{
 						onHidden: function () {
 							openToasts.pop();
+							if (setIsACopy) {
+								openToasts.push(toastr.info("Your new set, " + newSet.equivalents[0] + ", has the same elements as  " + copiedSet.equivalents[copiedSet.eqActiveIndex] + ". They are the same set. Click a set's name to switch between its nicknames", "Interesting.", 
+								{
+									onHidden: function () {
+										$scope.tut.sets.pop();
+										$scope.tut.sets[$scope.tut.sets.indexOf(copiedSet)].equivalents.push(newSet.equivalents[0]);
+										$scope.tut.sets[$scope.tut.sets.indexOf(copiedSet)].eqActiveIndex = $scope.tut.sets[$scope.tut.sets.indexOf(copiedSet)].equivalents.length - 1;
+										openToasts.pop();
+									}
+								}));
+							}
 						}
 					}));
 				}
@@ -359,21 +380,48 @@ app.controller("tutorialController", function($scope, toastr) {
 			default:
 				if ($scope.tut.selectedElements.length > 0) {
 					if ($scope.tut.customSetName != '') {
+						var setIsACopy = false;
+						var copiedSet = null;						
 						var newSet = new Set("sets", $scope.tut.customSetName);
 						$scope.tut.selectedElements.forEach(function (element) {
 							newSet.putIn(element);
 						});
 						newSet.groupIndex = $scope.tut.sets.length;
+						//Check if new set is a copy of an old set (same elements)
+						$scope.tut.sets.forEach(function(set) {
+							if (_.isEqual(set.elements, newSet.elements)) {
+								setIsACopy = true;
+								copiedSet = set;
+							}
+						});						
 						$scope.tut.sets.push(newSet);
 						$scope.tut.elements = $scope.tut.elements.concat($scope.tut.selectedElements.splice(0, $scope.tut.selectedElements.length));
 						$scope.tut.elements.sort(sortGroup);
 						$scope.tut.customSetName = '';
 
+						// if (setIsACopy) {
+						// 	openToasts.push(toastr.info("Your new set, " + newSet.equivalents[0] + ", has the same elements as  " + copiedSet.equivalents[copiedSet.eqActiveIndex] + ". They are the same set. Click a set's name to switch between its nicknames", "Interesting.", 
+						// 	{
+						// 		onHidden: function () {
+						// 			$scope.tut.sets.pop();
+						// 			$scope.tut.sets[$scope.tut.sets.indexOf(copiedSet)].equivalents.push(newSet.equivalents[0]);
+						// 			$scope.tut.sets[$scope.tut.sets.indexOf(copiedSet)].eqActiveIndex = $scope.tut.sets[$scope.tut.sets.indexOf(copiedSet)].equivalents.length - 1;
+						// 			openToasts.pop();
+						// 		}
+						// 	}));
+						// }						
+
 						switch ($scope.tut.sets.length) {
 							case 2:
 								$scope.tut.completeSteps = 4;
 								toastr.clear(openToasts.pop());
-								openToasts.push(toastr.success("You made a new set called " + newSet.equivalents[0] + "! Drag it into the Set Inspector"));
+								openToasts.push(toastr.success("You made a new set called " + newSet.equivalents[0] + "! Drag it into the Set Inspector",
+									{
+										onHidden: function () {
+											openToasts.pop();
+											$scope.tut.flashSetIndex = 1;
+										}
+									}));
 								break;
 
 							break;
@@ -426,7 +474,7 @@ app.controller("tutorialController", function($scope, toastr) {
 			case 4:
 				if ($scope.tut.sets.length === 2) {
 					toastr.clear(openToasts.pop());
-					openToasts.push(toastr.success("Three more elements have appeared. Create three more sets", "Good!", {
+					openToasts.push(toastr.success("Now make 4 more sets", "Good!", {
 						onHidden: function() {
 							openToasts.pop();
 							$scope.tut.contentsSet = null;
@@ -434,7 +482,7 @@ app.controller("tutorialController", function($scope, toastr) {
 						}
 					}));
 					$scope.tut.completeSteps = 5;
-					$scope.tut.elements.push(z, p, q, jeffersmith);
+					// $scope.tut.elements.push(z, p, q, jeffersmith);
 					$scope.tut.setElementStyles();
 				} 
 				break;
@@ -513,6 +561,7 @@ app.controller("tutorialController", function($scope, toastr) {
 		dragData.type = "set"
 		switch ($scope.tut.completeSteps) {
 			case 2:
+			case 4:
 				$scope.tut.flashSetIndex = null;
 				$scope.tut.contentsFlash = true;
 				break;
@@ -527,7 +576,8 @@ app.controller("tutorialController", function($scope, toastr) {
 		$scope.tut.contentsFlash = false;
 		switch ($scope.tut.completeSteps) {
 			case 2:
-				$scope.tut.flashSetIndex = 0;	
+			case 4:
+				$scope.tut.flashSetIndex = $scope.tut.sets.length - 1;	
 				break;
 		}
 		$scope.$apply();

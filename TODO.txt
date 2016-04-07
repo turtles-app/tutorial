@@ -2,7 +2,11 @@ TODO
 
 -	Reduce Text
 Step 7: Make an Intersection
-	-	Create intersection pocket w/ DnD
+	-	Drop into Intersection:
+		-	Migrate set instances into data service
+		-	Use these to move sets into intersection slots on drop into intersection
+	-	Drop into Sets:
+		-	Handle dragover and drop on sets container
 
 General:
 	-	Step 4 handle making a new set misplay (player doesn't drag new set to setContents)
@@ -12,3 +16,7 @@ General:
 Refactorizations:
 	-	drag and drop directives
 	-	onHidden event handler nesting solution
+
+BUGS:
+	-	Duplicate set detector doesn't catch 1st cutsom set being equal to bob
+	-	Duplicate set detector feels inconsistent

@@ -199,9 +199,9 @@ app.directive("droppableCustom", function() {
 	}
 });
 
-app.controller("tutorialController", function($scope, toastr) {
+app.controller("tutorialController", [ '$scope', '$rootScope', 'toastr', 'data', function($scope,  $rootScope, toastr, data) {
 	
-	this.completeSteps = 0;
+	this.completeSteps = data.completeSteps;
 	this.tab = 'bob';
 	this.sets = [];
 	this.elements = [];
@@ -343,6 +343,8 @@ app.controller("tutorialController", function($scope, toastr) {
 								onHidden: function () {
 									toastr.clear(openToasts.pop());
 									$scope.tut.tab = 'intersection';
+									data.tab = "intersection";
+									data.updateScopes();
 									openToasts.push(toastr.info("This is the first way making a new set from two old ones. Drag two sets into the two slots, then drag the whole intersection into the Set area", "Intersection", 
 										{
 											onHidden: function () {
@@ -627,4 +629,4 @@ app.controller("tutorialController", function($scope, toastr) {
 	};
 
 	openToasts.push(toastr.info('Drag x into Bob', 'Welcome =)'));
-});
+}]);

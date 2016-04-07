@@ -46,6 +46,7 @@
 	background-color: #7689A9;
 	left: 30%;
 	top: 10%;
+	z-index: 2;
 }
 
 #sets {
@@ -111,6 +112,7 @@
 	background-color: red;
 	border: 2px solid black;
 	border-radius: 50%;
+	z-index: 3;
 	/*top: 40%;*/
 }
 

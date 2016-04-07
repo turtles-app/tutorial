@@ -3,6 +3,7 @@
 <head>
 	<title>Math Tutorial</title>
 	<link rel="stylesheet" type="text/css" href="style.css">
+	<link rel="stylesheet" type="text/css" href="intersectionStyle.css">
 	<link rel="stylesheet" type="text/css" href="./node_modules/angular-toastr/dist/angular-toastr.css" />
 	<script type="text/javascript" src="./dependencies/angular.js"></script>
 	<script type="text/javascript" src="./node_modules/angular-toastr/dist/angular-toastr.tpls.js"></script>	
@@ -10,7 +11,11 @@
 	<script type="text/javascript" src="./engine/setEngine.js"></script>
 	<script type="text/javascript" src="./engine/operations.js"></script>
 	<script type="text/javascript" src="./engine/proofEngine.js"></script>
-	<script type="text/javascript" src=".//app.js"></script>
+	<script type="text/javascript" src="./app.js"></script>
+	<script type="text/javascript" src="./controllers/intersectionController.js"></script>
+	<script type="text/javascript" src="./directives/ryDroppable.js"></script>
+	<script type="text/javascript" src="./directives/ryDraggable.js"></script>
+	<script type="text/javascript" src="./services/data.js"></script>
 </head>
 <body>
 	<div ng-app="homepage" id="app">
@@ -33,6 +38,22 @@
 
 					</div>
 				</div>
+				<div id="intersection-controller" ng-controller="intersectionController as intersect">
+					<div ng-show="intersect.tab ==='intersection'">
+						<div id="intersect1" ry-droppable drop-allowed="intersect.dropAllowed" drop="intersect.dropSet1">
+							<div ng-if="intersect.set1" class="intersect-name">{{intersect.set1.strEquivalents[0]}}</div>
+							<img class="intersect-full"  ng-if="intersect.set1" ng-src="./img/intersection-{{intersect.setColors[intersect.groupNames.indexOf(intersect.set1.groupName)]}}.png" ng-style="{opacity: intersect.opacity}">
+						</div>
+						<div id="intersect-middle" ng-if="intersect.set1 && intersect.set2" draggable type="'intersection'" index="0" class="flashInf"></div>
+						<div id="intersect2" ry-droppable drop-allowed="intersect.dropAllowed" drop="intersect.dropSet2">
+							<div ng-if="intersect.set2" class="intersect-name">
+								{{intersect.set2.strEquivalents[0]}}
+							</div>
+							<img class="intersect-full"  ng-if="intersect.set2" ng-src="./img/intersection-{{intersect.setColors[intersect.groupNames.indexOf(intersect.set2.groupName)]}}.png" ng-style="{opacity: intersect.opacity}">
+						</div>
+						<div id="intersect-drop-block"></div>
+					</div>
+				</div>				
 			</div>
 			<div id="sets" droppable-sets  drop="dropIntoSets" dragover="dragOverSets" ng-class="{flashInf: tut.setsFlash}">
 				<h1>Sets</h1>

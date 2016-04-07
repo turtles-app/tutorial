@@ -1,0 +1,89 @@
+#intersection-controller {
+	position: absolute;
+	display: inline-block;
+	height: 350px;
+	width: 560px;
+	left: 15%;
+	top: 10%;
+}
+#intersect1 {
+	position: absolute;
+	display: inline-block;
+	background-image: url("./img/set-frame.png");
+	height: 355px;
+	width: 355px;
+}
+
+#intersect2 {
+	position: absolute;
+	display: inline-block;
+	background-image: url("./img/set-frame.png");
+	height: 355px;
+	width: 355px;
+	left: 35%;
+}
+
+#intersect-middle {
+	position: absolute;
+	display: inline-block;
+	background-image: url("./img/intersection-middle.png");
+	height: 161px;
+	width: 161px;
+	left: 35%;
+	top: 28%;
+	z-index: 2;
+}
+
+.intersect-name {
+	position: absolute;
+	display: inline-block;
+	left: 45%;
+	top: 30%;
+}
+
+.intersect-full {
+	position: absolute;
+	left: 0px;
+	top: 0px;
+	z-index: -1;
+}
+
+#intersect-drop-block {
+	display: block;
+	position: absolute;
+
+	height: 355px;
+	width: 155px;
+	left: 35%;
+	/*z-index: 1;*/
+}
+
+/*#sets {
+	display: block;
+	position: absolute;
+	height: 700px;
+	width: 200px;
+	border: 2px dashed black;
+}
+
+#sets-inner {
+	display: block;
+	position: absolute;
+	height: 700px;
+	width: 200px;	
+}
+
+.set {
+	display: block;
+	position: relative;
+	width: 116px;
+	text-align: center;
+}
+
+.set-name {
+	display: block;
+	position: absolute;
+	top: 40%;
+	left: 30%;
+	/*text-align: center;*/
+}*/

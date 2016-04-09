@@ -44,7 +44,7 @@
 							<div ng-if="intersect.set1" class="intersect-name">{{intersect.set1.strEquivalents[0]}}</div>
 							<img class="intersect-full"  ng-if="intersect.set1" ng-src="./img/intersection-{{intersect.setColors[intersect.groupNames.indexOf(intersect.set1.groupName)]}}.png" ng-style="{opacity: intersect.opacity}">
 						</div>
-						<div id="intersect-middle" ng-if="intersect.set1 && intersect.set2" draggable type="'intersection'" index="0" class="flashInf"></div>
+						<div id="intersect-middle" ng-if="intersect.set1 && intersect.set2" ry-draggable type="'intersection'" index="0" class="flashInf"></div>
 						<div id="intersect2" ry-droppable drop-allowed="intersect.dropAllowed" drop="intersect.dropSet2">
 							<div ng-if="intersect.set2" class="intersect-name">
 								{{intersect.set2.strEquivalents[0]}}
@@ -57,7 +57,7 @@
 			</div>
 			<div id="sets" droppable-sets  drop="dropIntoSets" dragover="dragOverSets" ng-class="{flashInf: tut.setsFlash}">
 				<h1>Sets</h1>
-				<div ng-repeat="set in tut.sets"  id="{{set.equivalents[set.eqActiveIndex]}}"  index="{{$index}}" class="set" ng-class="{flashInf: tut.flashSetIndex===$index}" draggable="true" ondragstart="angular.element(getElementById('wrapper')).scope().tut.dragSet(event)" ondragend="angular.element(getElementById('wrapper')).scope().tut.endDragSet(event)">{{set.equivalents[set.eqActiveIndex]}}</div>
+				<div ng-repeat="set in tut.sets"  id="{{set.equivalents[set.eqActiveIndex]}}"  index="{{$index}}" class="set" ng-class="{flashInf: tut.flashSetIndex===$index}" draggable="true" ondragstart="angular.element(getElementById('wrapper')).scope().tut.dragSet(event)" ondragend="angular.element(getElementById('wrapper')).scope().tut.endDragSet(event)">{{set.strEquivalents[set.eqActiveIndex]}}</div>
 			</div>
 			<div id="elements">
 				<h1>Elements</h1>
@@ -72,7 +72,7 @@
 			<div id="trueContents" ng-show="tut.showContents" ng-class="{flashInf: tut.contentsFlash}" droppable-contents dragover="dragOverContents" drop="dropIntoContents">
 				<h1 id="trueContentsTitle">Set Inspector</h1>
 				<h3 id='trueContentsText0' ng-hide="tut.contentsSet">Drag a set here to see what's inside it</h3>
-				<h3 id="trueContentsText1" ng-show="tut.contentsSet">{{tut.contentsSet.equivalents[tut.contentsSet.eqActiveIndex]}}</h3>
+				<h3 id="trueContentsText1" ng-show="tut.contentsSet">{{tut.contentsSet.strEquivalents[tut.contentsSet.eqActiveIndex]}}</h3>
 					<div ng-repeat="element in tut.contentsSet.elements" class="contentElement" ng-style="{'background-color': element.color, 'opacity': element.opacity, 'border':element.border}"><div class="elName" >{{element.name}}</div></div>
 			</div>
 		</div>

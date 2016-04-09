@@ -82,7 +82,7 @@ app.directive('droppableSets', function() {
 							if(dragData.id === 'bob') e.preventDefault();
 							break;
 						default:
-							if (dragData.type === 'custom') e.preventDefault();
+							if (dragData.type === 'custom' || dragData.type === 'intersection') e.preventDefault();
 							break;
 					}
 					// if (dragData.id === 'bob' && steps === 1) e.preventDefault();
@@ -262,7 +262,7 @@ app.controller("tutorialController", [ '$scope', '$rootScope', 'toastr', 'data',
 			//Dragging bob into sets
 			case 1:
 				if (dragData.id === 'bob') {
-					$scope.tut.completeSteps = 2;
+					data.completeSteps = 2;
 					var caughtToast = openToasts.pop();
 					toastr.clear(caughtToast);
 					if (caughtToast.toastId < 2) toastr.clear(openToasts.pop());
@@ -292,8 +292,9 @@ app.controller("tutorialController", [ '$scope', '$rootScope', 'toastr', 'data',
 					var bob = new Set("sets", "Bob");
 					bob.putIn(x);
 					bob.groupIndex = 0;
-					$scope.tut.sets.push(bob);
-					$scope.tut.tab = '';
+					data.sets.push(bob);
+					data.tab = '';
+					data.updateScopes();
 					$scope.tut.elements.push($scope.tut.selectedElements.splice(0, 1)[0]);
 				}
 				break;
@@ -310,13 +311,14 @@ app.controller("tutorialController", [ '$scope', '$rootScope', 'toastr', 'data',
 						newSet.groupIndex = $scope.tut.sets.length;
 
 
-						$scope.tut.sets.forEach(function(set) {
+					data.sets.forEach(function(set) {
 							if (_.isEqual(set.elements, newSet.elements)) {
 								setIsACopy = true;
 								copiedSet = set;
 							}
 						});
-						$scope.tut.sets.push(newSet);
+						data.sets.push(newSet);
+						data.updateScopes();
 						$scope.tut.elements = $scope.tut.elements.concat($scope.tut.selectedElements.splice(0, $scope.tut.selectedElements.length));
 						$scope.tut.elements.sort(sortGroup);
 						$scope.tut.customSetName = '';
@@ -328,13 +330,13 @@ app.controller("tutorialController", [ '$scope', '$rootScope', 'toastr', 'data',
 					toastr.clear(openToasts.pop());
 					openToasts.push(toastr.warning("Empty sets are funky. We'll deal with them later. Drag elements into your set first", "Nice Try"));
 				} 				
-				if ($scope.tut.sets.length === 6) {
+				if (data.sets.length === 6) {
 					openToasts.forEach(function (toast) {
 						toastr.clear(toast);
 					});
 					openToasts = []; 
 					// toastr.clear(openToasts.pop());
-					$scope.tut.completeSteps = 6;
+					data.completeSteps = 6;
 					openToasts.push(toastr.success("We now have 6 sets.", "Well Done!", {
 						onHidden: function () {
 							toastr.clear(openToasts.pop());
@@ -342,7 +344,7 @@ app.controller("tutorialController", [ '$scope', '$rootScope', 'toastr', 'data',
 							{
 								onHidden: function () {
 									toastr.clear(openToasts.pop());
-									$scope.tut.tab = 'intersection';
+									// $scope.tut.tab = 'intersection';
 									data.tab = "intersection";
 									data.updateScopes();
 									openToasts.push(toastr.info("This is the first way making a new set from two old ones. Drag two sets into the two slots, then drag the whole intersection into the Set area", "Intersection", 
@@ -357,7 +359,7 @@ app.controller("tutorialController", [ '$scope', '$rootScope', 'toastr', 'data',
 						}
 					}));
 				} else {
-					var step5Progress =  $scope.tut.sets.length - 2;
+					var step5Progress =  data.sets.length - 2;
 					var str = step5Progress + "/4 Sets created";
 					toastr.clear(openToasts.pop());
 					openToasts.push(toastr.info(str, "Step 6 progress", 
@@ -368,9 +370,10 @@ app.controller("tutorialController", [ '$scope', '$rootScope', 'toastr', 'data',
 								openToasts.push(toastr.info("Your new set, " + newSet.equivalents[0] + ", has the same elements as  " + copiedSet.equivalents[copiedSet.eqActiveIndex] + ". They are the same set. Click a set's name to switch between its nicknames", "Interesting.", 
 								{
 									onHidden: function () {
-										$scope.tut.sets.pop();
-										$scope.tut.sets[$scope.tut.sets.indexOf(copiedSet)].equivalents.push(newSet.equivalents[0]);
-										$scope.tut.sets[$scope.tut.sets.indexOf(copiedSet)].eqActiveIndex = $scope.tut.sets[$scope.tut.sets.indexOf(copiedSet)].equivalents.length - 1;
+										data.sets.pop();
+										data.sets[data.sets.indexOf(copiedSet)].equivalents.push(newSet.equivalents[0]);
+										data.sets[data.sets.indexOf(copiedSet)].eqActiveIndex = data.sets[data.sets.indexOf(copiedSet)].equivalents.length - 1;
+										data.updateScopes();
 										openToasts.pop();
 									}
 								}));
@@ -379,64 +382,173 @@ app.controller("tutorialController", [ '$scope', '$rootScope', 'toastr', 'data',
 					}));
 				}
 				break;
-			default:
-				if ($scope.tut.selectedElements.length > 0) {
-					if ($scope.tut.customSetName != '') {
-						var setIsACopy = false;
-						var copiedSet = null;						
-						var newSet = new Set("sets", $scope.tut.customSetName);
-						$scope.tut.selectedElements.forEach(function (element) {
-							newSet.putIn(element);
-						});
-						newSet.groupIndex = $scope.tut.sets.length;
-						//Check if new set is a copy of an old set (same elements)
-						$scope.tut.sets.forEach(function(set) {
-							if (_.isEqual(set.elements, newSet.elements)) {
-								setIsACopy = true;
-								copiedSet = set;
-							}
-						});						
-						$scope.tut.sets.push(newSet);
-						$scope.tut.elements = $scope.tut.elements.concat($scope.tut.selectedElements.splice(0, $scope.tut.selectedElements.length));
-						$scope.tut.elements.sort(sortGroup);
-						$scope.tut.customSetName = '';
 
-						// if (setIsACopy) {
-						// 	openToasts.push(toastr.info("Your new set, " + newSet.equivalents[0] + ", has the same elements as  " + copiedSet.equivalents[copiedSet.eqActiveIndex] + ". They are the same set. Click a set's name to switch between its nicknames", "Interesting.", 
-						// 	{
-						// 		onHidden: function () {
-						// 			$scope.tut.sets.pop();
-						// 			$scope.tut.sets[$scope.tut.sets.indexOf(copiedSet)].equivalents.push(newSet.equivalents[0]);
-						// 			$scope.tut.sets[$scope.tut.sets.indexOf(copiedSet)].eqActiveIndex = $scope.tut.sets[$scope.tut.sets.indexOf(copiedSet)].equivalents.length - 1;
-						// 			openToasts.pop();
-						// 		}
-						// 	}));
-						// }						
+				//First Intersection
+				case 6:
+					switch(dragData.type) {
+						case 'intersection':
+							var res = intersection("name", data.intersectSet1, data.intersectSet2);
+							data.sets.push(data.intersectSet1, data.intersectSet2);
+							var i1Name = data.intersectSet1.strEquivalents[data.intersectSet1.eqActiveIndex];
+							var i2Name = data.intersectSet2.strEquivalents[data.intersectSet2.eqActiveIndex];
+							data.intersectSet1 = null;
+							data.intersectSet2 = null;
+							// $scope.setCtrl.set1 = null;
+							// $scope.setCtrl.set2 = null;
+							res.groupIndex = data.sets.length;
+							data.sets.push(res);
+							data.completeSteps = 7;
+							data.sets.sort(sortGroup);
+							data.updateScopes();
+							// $scope.$apply();
 
-						switch ($scope.tut.sets.length) {
-							case 2:
-								$scope.tut.completeSteps = 4;
-								toastr.clear(openToasts.pop());
-								openToasts.push(toastr.success("You made a new set called " + newSet.equivalents[0] + "! Drag it into the Set Inspector",
-									{
-										onHidden: function () {
-											openToasts.pop();
-											$scope.tut.flashSetIndex = 1;
-										}
-									}));
-								break;
-
+							var newName = res.strEquivalents[0];
+							var txt = "Nice! You conjured the intersection of " + i1Name + " and " + i2Name + ". It has only the elements that were in BOTH sets. Inspect it!";
+							toastr.success(txt, "New Set Type");
 							break;
+						case 'set':
+							if ($scope.tut.selectedElements.length > 0) {
+								if ($scope.tut.customSetName != '') {
+									var setIsACopy = false;
+									var copiedSet = null;						
+									var newSet = new Set("sets", $scope.tut.customSetName);
+									$scope.tut.selectedElements.forEach(function (element) {
+										newSet.putIn(element);
+									});
+									newSet.groupIndex = data.sets.length;
+									//Check if new set is a copy of an old set (same elements)
+									data.sets.forEach(function(set) {
+										if (_.isEqual(set.elements, newSet.elements)) {
+											setIsACopy = true;
+											copiedSet = set;
+										}
+									});						
+									data.sets.push(newSet);
+									data.updateScopes();
+									$scope.tut.elements = $scope.tut.elements.concat($scope.tut.selectedElements.splice(0, $scope.tut.selectedElements.length));
+									$scope.tut.elements.sort(sortGroup);
+									$scope.tut.customSetName = '';
 
-						}
-					} else {
-						toastr.clear(openToasts.pop());
-						openToasts.push(toastr.warning("You must name your set first. Type a name in the text box.", "Nice Try"));
+									// if (setIsACopy) {
+									// 	openToasts.push(toastr.info("Your new set, " + newSet.equivalents[0] + ", has the same elements as  " + copiedSet.equivalents[copiedSet.eqActiveIndex] + ". They are the same set. Click a set's name to switch between its nicknames", "Interesting.", 
+									// 	{
+									// 		onHidden: function () {
+									// 			$scope.tut.sets.pop();
+									// 			$scope.tut.sets[$scope.tut.sets.indexOf(copiedSet)].equivalents.push(newSet.equivalents[0]);
+									// 			$scope.tut.sets[$scope.tut.sets.indexOf(copiedSet)].eqActiveIndex = $scope.tut.sets[$scope.tut.sets.indexOf(copiedSet)].equivalents.length - 1;
+									// 			openToasts.pop();
+									// 		}
+									// 	}));
+									// }						
+
+									switch ($scope.tut.sets.length) {
+										case 2:
+											data.completeSteps = 4;
+											data.updateScopes();
+											toastr.clear(openToasts.pop());
+											openToasts.push(toastr.success("You made a new set called " + newSet.equivalents[0] + "! Drag it into the Set Inspector",
+												{
+													onHidden: function () {
+														openToasts.pop();
+														$scope.tut.flashSetIndex = 1;
+													}
+												}));
+											break;
+
+										break;
+
+									}
+								} else {
+									toastr.clear(openToasts.pop());
+									openToasts.push(toastr.warning("You must name your set first. Type a name in the text box.", "Nice Try"));
+								}
+							} else {
+								toastr.clear(openToasts.pop());
+								openToasts.push(toastr.warning("Empty sets are funky. We'll deal with them later. Drag elements into your set first", "Nice Try"));
+							} 						
+							break;
 					}
-				} else {
-					toastr.clear(openToasts.pop());
-					openToasts.push(toastr.warning("Empty sets are funky. We'll deal with them later. Drag elements into your set first", "Nice Try"));
-				} 
+					break;
+			default:
+				switch (dragData.type) {
+					case 'intersection':
+						var res = intersection("name", data.intersectSet1, data.intersectSet2);
+						data.sets.push(data.intersectSet1, data.intersectSet2);
+						var i1Name = data.intersectSet1.strEquivalents[data.intersectSet1.eqActiveIndex];
+						var i2Name = data.intersectSet2.strEquivalents[data.intersectSet2.eqActiveIndex];
+						data.intersectSet1 = null;
+						data.intersectSet2 = null;
+						// $scope.setCtrl.set1 = null;
+						// $scope.setCtrl.set2 = null;
+						res.groupIndex = data.sets.length;
+						data.sets.push(res);
+						data.completeSteps = 7;
+						data.updateScopes();					
+						break;
+
+					case 'set':
+					case 'custom':
+						if ($scope.tut.selectedElements.length > 0) {
+							if ($scope.tut.customSetName != '') {
+								var setIsACopy = false;
+								var copiedSet = null;						
+								var newSet = new Set("sets", $scope.tut.customSetName);
+								$scope.tut.selectedElements.forEach(function (element) {
+									newSet.putIn(element);
+								});
+								newSet.groupIndex = data.sets.length;
+								//Check if new set is a copy of an old set (same elements)
+								data.sets.forEach(function(set) {
+									if (_.isEqual(set.elements, newSet.elements)) {
+										setIsACopy = true;
+										copiedSet = set;
+									}
+								});						
+								data.sets.push(newSet);
+								data.updateScopes();
+								$scope.tut.elements = $scope.tut.elements.concat($scope.tut.selectedElements.splice(0, $scope.tut.selectedElements.length));
+								$scope.tut.elements.sort(sortGroup);
+								$scope.tut.customSetName = '';
+
+								// if (setIsACopy) {
+								// 	openToasts.push(toastr.info("Your new set, " + newSet.equivalents[0] + ", has the same elements as  " + copiedSet.equivalents[copiedSet.eqActiveIndex] + ". They are the same set. Click a set's name to switch between its nicknames", "Interesting.", 
+								// 	{
+								// 		onHidden: function () {
+								// 			$scope.tut.sets.pop();
+								// 			$scope.tut.sets[$scope.tut.sets.indexOf(copiedSet)].equivalents.push(newSet.equivalents[0]);
+								// 			$scope.tut.sets[$scope.tut.sets.indexOf(copiedSet)].eqActiveIndex = $scope.tut.sets[$scope.tut.sets.indexOf(copiedSet)].equivalents.length - 1;
+								// 			openToasts.pop();
+								// 		}
+								// 	}));
+								// }						
+
+								switch ($scope.tut.sets.length) {
+									case 2:
+										data.completeSteps = 4;
+										data.updateScopes();
+										toastr.clear(openToasts.pop());
+										openToasts.push(toastr.success("You made a new set called " + newSet.equivalents[0] + "! Drag it into the Set Inspector",
+											{
+												onHidden: function () {
+													openToasts.pop();
+													$scope.tut.flashSetIndex = 1;
+												}
+											}));
+										break;
+
+									break;
+
+								}
+							} else {
+								toastr.clear(openToasts.pop());
+								openToasts.push(toastr.warning("You must name your set first. Type a name in the text box.", "Nice Try"));
+							}
+						} else {
+							toastr.clear(openToasts.pop());
+							openToasts.push(toastr.warning("Empty sets are funky. We'll deal with them later. Drag elements into your set first", "Nice Try"));
+						} 
+						break;
+				}
 				break;
 		}
 	}
@@ -461,13 +573,15 @@ app.controller("tutorialController", [ '$scope', '$rootScope', 'toastr', 'data',
 	$scope.tut.setElementStyles();
 		switch ($scope.tut.completeSteps) {
 			case 2:
-				$scope.tut.completeSteps = 3;
+				data.completeSteps = 3;
+				data.updateScopes();
 				toastr.clear(openToasts.pop());
 				openToasts.push(toastr.info("The Set Inspector shows which elements are in a set", {
 					onHidden: function () {
 						toastr.clear(openToasts.pop());
 						openToasts.push(toastr.info("Name it, choose elements, and drag it to the set area", "Make your own set"));
-						$scope.tut.tab = 'customSet';
+						data.tab = 'customSet';
+						data.updateScopes();
 						$scope.tut.contentsSet = null;
 						$scope.tut.clearElementStyles();
 					}
@@ -483,7 +597,8 @@ app.controller("tutorialController", [ '$scope', '$rootScope', 'toastr', 'data',
 							$scope.tut.clearElementStyles();
 						}
 					}));
-					$scope.tut.completeSteps = 5;
+					data.completeSteps = 5;
+					data.updateScopes();
 					// $scope.tut.elements.push(z, p, q, jeffersmith);
 					$scope.tut.setElementStyles();
 				} 
@@ -627,6 +742,12 @@ app.controller("tutorialController", [ '$scope', '$rootScope', 'toastr', 'data',
 		});
 		// $scope.$apply();
 	};
+
+	$rootScope.$on("dataUpdate", function (ev, update) {
+		$scope.tut.completeSteps = update.steps;
+		$scope.tut.sets = update.sets;
+		$scope.tut.tab = update.tab;
+	});
 
 	openToasts.push(toastr.info('Drag x into Bob', 'Welcome =)'));
 }]);

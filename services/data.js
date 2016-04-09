@@ -2,8 +2,8 @@ app.factory("data", ['$rootScope', function($rootScope) {
 	var self = this;
 	this.completeSteps = 0;
 	this.sets = [];
-	this.elements = [];
 	this.tab = 'bob';
+	// this.elements = [];
 	// this.selectedElements = [];
 	// this.contentsSet = null;
 	// this.elFlash = true;
@@ -31,7 +31,7 @@ app.factory("data", ['$rootScope', function($rootScope) {
 	q.groupIndex = 4;
 	jeffersmith.groupIndex = 5;
 
-	this.elements.push(x);
+	// this.elements.push(x);
 
 	this.updateScopes = function () {
 		$rootScope.$broadcast("dataUpdate", 

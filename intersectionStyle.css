@@ -31,7 +31,7 @@
 	width: 161px;
 	left: 35%;
 	top: 28%;
-	z-index: 2;
+	z-index: 3;
 }
 
 .intersect-name {
@@ -45,7 +45,7 @@
 	position: absolute;
 	left: 0px;
 	top: 0px;
-	z-index: -1;
+	z-index: 1;
 }
 
 #intersect-drop-block {
@@ -56,6 +56,12 @@
 	width: 155px;
 	left: 35%;
 	/*z-index: 1;*/
+}
+
+.intersect-name {
+	position: relative;
+	display: inline-block;
+	z-index: 2;
 }
 
 /*#sets {
@@ -86,4 +92,4 @@
 	top: 40%;
 	left: 30%;
 	/*text-align: center;*/
-}*/
+/*}*/

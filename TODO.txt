@@ -1,14 +1,10 @@
 TODO
 
--	Reduce Text
-Step 7: Make an Intersection
-	-	Drop into Intersection:
-		-	Migrate set instances into data service
-		-	Use these to move sets into intersection slots on drop into intersection
-	-	Drop into Sets:
-		-	Handle dragover and drop on sets container
+
 
 General:
+	-	Reduce Text
+	-	Update set colors
 	-	Step 4 handle making a new set misplay (player doesn't drag new set to setContents)
 	-	Normalize toasts
 	-	bottom % for contentsElements (has to be fixed px atm)
@@ -20,3 +16,4 @@ Refactorizations:
 BUGS:
 	-	Duplicate set detector doesn't catch 1st cutsom set being equal to bob
 	-	Duplicate set detector feels inconsistent
+	-	Element stylings don't clear if an element is in selectedElements when clear is called

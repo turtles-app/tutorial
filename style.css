@@ -175,6 +175,30 @@
 	background-color:  #7689A9;
 }
 
+#facts {
+	display: block;
+	position: absolute;
+	height: 60%;
+	width: 30%;
+	border: 2px solid black;
+}
+
+.fact {
+	display: inline-block;
+	position: relative;
+	margin-left: 10px;
+	background-image: url("./img/fact.png");
+	width: 120px;
+	height: 100px;
+}
+
+.fact p {
+	position: absolute;
+	display: block;
+	left: 18%;
+	top: 50%;
+}
+
 .flashInf {
 	-webkit-animation: fading 2s infinite;
 	animation: fading 2s infinite;

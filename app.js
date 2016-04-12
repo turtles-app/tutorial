@@ -266,11 +266,10 @@ app.controller("tutorialController", [ '$scope', '$rootScope', 'toastr', 'data',
 					var caughtToast = openToasts.pop();
 					toastr.clear(caughtToast);
 					if (caughtToast.toastId < 2) toastr.clear(openToasts.pop());
-					openToasts.push(toastr.success("Now Bob exists, and he has x inside him. He is forever grateful.", "Congratulations!", {
+					openToasts.push(toastr.success("Now Bob exists, and he has x inside him. You get a fact to prove it!", "Congratulations!", {
 						onHidden: function(clicked) {
 							openToasts.pop();
 							if ($scope.tut.completeSteps === 2) {
-								
 								
 								$scope.tut.elements.push(y, z);
 								openToasts.push(toastr.info("Two new Elements have appeared! They aren't in Bob.", "New Elements", 
@@ -294,6 +293,7 @@ app.controller("tutorialController", [ '$scope', '$rootScope', 'toastr', 'data',
 					bob.groupIndex = 0;
 					data.sets.push(bob);
 					data.tab = '';
+					data.publishSet(bob);
 					data.updateScopes();
 					$scope.tut.elements.push($scope.tut.selectedElements.splice(0, 1)[0]);
 				}
@@ -322,6 +322,7 @@ app.controller("tutorialController", [ '$scope', '$rootScope', 'toastr', 'data',
 						$scope.tut.elements = $scope.tut.elements.concat($scope.tut.selectedElements.splice(0, $scope.tut.selectedElements.length));
 						$scope.tut.elements.sort(sortGroup);
 						$scope.tut.customSetName = '';
+						data.publishSet(newSet);
 					} else {
 						toastr.clear(openToasts.pop());
 						openToasts.push(toastr.warning("You must name your set first. Type a name in the text box.", "Nice Try"));
@@ -425,6 +426,7 @@ app.controller("tutorialController", [ '$scope', '$rootScope', 'toastr', 'data',
 									});						
 									data.sets.push(newSet);
 									data.updateScopes();
+									data.publishSet(newSet);
 									$scope.tut.elements = $scope.tut.elements.concat($scope.tut.selectedElements.splice(0, $scope.tut.selectedElements.length));
 									$scope.tut.elements.sort(sortGroup);
 									$scope.tut.customSetName = '';
@@ -506,6 +508,7 @@ app.controller("tutorialController", [ '$scope', '$rootScope', 'toastr', 'data',
 								});						
 								data.sets.push(newSet);
 								data.updateScopes();
+								data.publishSet(newSet);
 								$scope.tut.elements = $scope.tut.elements.concat($scope.tut.selectedElements.splice(0, $scope.tut.selectedElements.length));
 								$scope.tut.elements.sort(sortGroup);
 								$scope.tut.customSetName = '';

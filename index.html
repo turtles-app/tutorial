@@ -13,6 +13,7 @@
 	<script type="text/javascript" src="./engine/proofEngine.js"></script>
 	<script type="text/javascript" src="./app.js"></script>
 	<script type="text/javascript" src="./controllers/intersectionController.js"></script>
+	<script type="text/javascript" src="./controllers/factController.js"></script>
 	<script type="text/javascript" src="./directives/ryDroppable.js"></script>
 	<script type="text/javascript" src="./directives/ryDraggable.js"></script>
 	<script type="text/javascript" src="./services/data.js"></script>
@@ -22,6 +23,14 @@
 		<div ng-controller="tutorialController as tut" id="wrapper">
 			<div id="progressBar">
 				<div ng-repeat="step in [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16]" class="step" ng-class="{complete: step <= tut.completeSteps, incomplete: step > tut.completeSteps}"></div>
+			</div>
+			<div ng-controller="factController as facts" id="facts"><h1>Facts</h1>
+				<div ng-repeat="fact in facts.facts" class="fact">
+					<p>
+						{{fact.str}}
+					</p>
+				</div>
+
 			</div>
 			<div id="midWrap">
 				<div id='bobPocket' ng-show="tut.tab==='bob'" droppable-bob drop="dropIntoBob" ondragstart="angular.element(getElementById('wrapper')).scope().tut.dragBob(event)" ondragend="angular.element(getElementById('wrapper')).scope().tut.endDragBob(event)">

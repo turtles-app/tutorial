@@ -44,6 +44,10 @@ app.factory("data", ['$rootScope', function($rootScope) {
 				tab: self.tab
 			}
 			);
+	};
+
+	this.publishSet = function (set) {
+		$rootScope.$broadcast("publishSet", {set: set});
 	}
 	return this;	
 }]);

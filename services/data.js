@@ -2,6 +2,7 @@ app.factory("data", ['$rootScope', function($rootScope) {
 	var self = this;
 	this.completeSteps = 0;
 	this.sets = [];
+	this.facts = [];
 	this.tab = 'bob';
 	// this.elements = [];
 	// this.selectedElements = [];
@@ -48,6 +49,20 @@ app.factory("data", ['$rootScope', function($rootScope) {
 
 	this.publishSet = function (set) {
 		$rootScope.$broadcast("publishSet", {set: set});
+	}
+
+	this.relevantFacts = function (set) {
+		var facts = [];
+		set.elements.forEach(function (element) {
+			self.facts.forEach(function (fact) {
+				var relevant = fact.elementName === element.name && fact.setSyntax === set.equivalents[set.eqActiveIndex]; 
+				if (relevant) facts.push(fact);
+			});
+		});
+		$rootScope.$broadcast("relevantFacts", {
+			facts: facts
+		});
+		return facts;
 	}
 	return this;	
 }]);

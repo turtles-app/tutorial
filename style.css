@@ -142,10 +142,10 @@
 	background-color: #C7E99B;
 	border: 2px solid black;
 	border-radius: 9%;
-	height: 30%;
+	height: 40%;
 	width: 35%;
-	top: 65%;
-	left: 65%;
+	top: 60%;
+	left: 25%;
 	padding-left: 5%;
 }
 
@@ -171,15 +171,25 @@
 
 #trueContentsText1 {
 	width:33%;
-	height:50%;
+	height:40%;
 	background-color:  #7689A9;
 }
 
+#contentsFacts {
+	display: block;
+	position: absolute;
+	border: 2px solid black;
+	border-radius: 5px;
+	width: 40%;
+	height: 100%;
+	left: 50%;
+	top: 0%;
+}
 #facts {
 	display: block;
 	position: absolute;
 	height: 60%;
-	width: 30%;
+	width: 280px;
 	border: 2px solid black;
 }
 

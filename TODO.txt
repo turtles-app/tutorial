@@ -9,8 +9,12 @@ General:
 	-	Normalize toasts
 	-	bottom % for contentsElements (has to be fixed px atm)
 
+Inspector:
+	-	Setting/clearing functions
+	-	Differentiate between NOT IN and UNKNOWN elements
+
 Refactorizations:
-	-	drag and drop directives
+	-	Separate controllers and directives in to individual files
 	-	onHidden event handler nesting solution
 
 BUGS:

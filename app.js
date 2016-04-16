@@ -206,6 +206,8 @@ app.controller("tutorialController", [ '$scope', '$rootScope', 'toastr', 'data',
 	this.sets = [];
 	this.elements = [];
 	this.selectedElements = [];
+	// this.facts = data.facts;
+	this.inspectorFacts = [];
 	this.contentsSet = null;
 	this.elFlash = true;
 	this.bobFlash = false;
@@ -448,7 +450,7 @@ app.controller("tutorialController", [ '$scope', '$rootScope', 'toastr', 'data',
 											data.completeSteps = 4;
 											data.updateScopes();
 											toastr.clear(openToasts.pop());
-											openToasts.push(toastr.success("You made a new set called " + newSet.equivalents[0] + "! Drag it into the Set Inspector",
+											openToasts.push(toastr.success("You made a new SET called " + newSet.equivalents[0] + "! Drag it into the Set Inspector",
 												{
 													onHidden: function () {
 														openToasts.pop();
@@ -462,11 +464,11 @@ app.controller("tutorialController", [ '$scope', '$rootScope', 'toastr', 'data',
 									}
 								} else {
 									toastr.clear(openToasts.pop());
-									openToasts.push(toastr.warning("You must name your set first. Type a name in the text box.", "Nice Try"));
+									openToasts.push(toastr.warning("You must name your SET first. Type a name in the text box.", "Nice Try"));
 								}
 							} else {
 								toastr.clear(openToasts.pop());
-								openToasts.push(toastr.warning("Empty sets are funky. We'll deal with them later. Drag elements into your set first", "Nice Try"));
+								openToasts.push(toastr.warning("Empty SETS are funky. We'll deal with them later. Drag ELEMENTS into your SET first", "Nice Try"));
 							} 						
 							break;
 					}
@@ -544,11 +546,11 @@ app.controller("tutorialController", [ '$scope', '$rootScope', 'toastr', 'data',
 								}
 							} else {
 								toastr.clear(openToasts.pop());
-								openToasts.push(toastr.warning("You must name your set first. Type a name in the text box.", "Nice Try"));
+								openToasts.push(toastr.warning("You must name your SET first. Type a name in the text box.", "Nice Try"));
 							}
 						} else {
 							toastr.clear(openToasts.pop());
-							openToasts.push(toastr.warning("Empty sets are funky. We'll deal with them later. Drag elements into your set first", "Nice Try"));
+							openToasts.push(toastr.warning("Empty SETS are funky. We'll deal with them later. Drag ELEMENTS into your SET first", "Nice Try"));
 						} 
 						break;
 				}
@@ -558,6 +560,13 @@ app.controller("tutorialController", [ '$scope', '$rootScope', 'toastr', 'data',
 
 	$scope.dropIntoContents = function (index) {
 		$scope.tut.contentsSet = $scope.tut.sets[index];
+		var relevantFacts = data.relevantFacts($scope.tut.contentsSet);
+		// console.log("relevantFacts:");
+		// console.log(relevantFacts);
+		$scope.tut.inspectorFacts = relevantFacts;
+		// console.log("inspectorFacts:");
+		// console.log($scope.tut.inspectorFacts);
+		// $scope.$apply();
 		// $scope.tut.elements.forEach(function(element) {
 		// 	var opacity = element.opacity;
 		// 	var border = element.border;
@@ -579,13 +588,15 @@ app.controller("tutorialController", [ '$scope', '$rootScope', 'toastr', 'data',
 				data.completeSteps = 3;
 				data.updateScopes();
 				toastr.clear(openToasts.pop());
-				openToasts.push(toastr.info("The Set Inspector shows which elements are in a set", {
+				openToasts.push(toastr.info("The Set Inspector uses your FACTS to show which ELEMENTS are in a SET", {
 					onHidden: function () {
 						toastr.clear(openToasts.pop());
 						openToasts.push(toastr.info("Name it, choose elements, and drag it to the set area", "Make your own set"));
 						data.tab = 'customSet';
 						data.updateScopes();
 						$scope.tut.contentsSet = null;
+						$scope.tut.inspectorFacts = [];
+						$rootScope.$broadcast("clearInspector");
 						$scope.tut.clearElementStyles();
 					}
 				}));
@@ -597,6 +608,8 @@ app.controller("tutorialController", [ '$scope', '$rootScope', 'toastr', 'data',
 						onHidden: function() {
 							openToasts.pop();
 							$scope.tut.contentsSet = null;
+							$scope.tut.inspectorFacts = [];
+							$rootScope.$broadcast("clearInspector");							
 							$scope.tut.clearElementStyles();
 						}
 					}));
@@ -751,6 +764,11 @@ app.controller("tutorialController", [ '$scope', '$rootScope', 'toastr', 'data',
 		$scope.tut.sets = update.sets;
 		$scope.tut.tab = update.tab;
 	});
+
+	// $rootScope.$on("publishFacts", function (ev, update) {
+	// 	// $scope.tut.facts = update.facts;
+
+	// });
 
 	openToasts.push(toastr.info('Drag x into Bob', 'Welcome =)'));
 }]);

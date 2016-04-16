@@ -217,6 +217,9 @@ app.controller("tutorialController", [ '$scope', '$rootScope', 'toastr', 'data',
 	this.flashSetIndex = null;
 	this.colors = ['#970000','#E6943B','#CCC508','#C0009C','#EE2998','#27E493'];
 	this.customSetName = '';
+	this.firstIntersection1    	= null;
+	this.firstIntersection2 	= null;
+	this.firstIntersectionRes 	= null;
 
 	// this.elStyle = "{'-webkit-animation': 'fading 4s infinite', 'animation': 'fading 4s infinite'}";
 
@@ -392,22 +395,23 @@ app.controller("tutorialController", [ '$scope', '$rootScope', 'toastr', 'data',
 						case 'intersection':
 							var res = intersection("name", data.intersectSet1, data.intersectSet2);
 							data.sets.push(data.intersectSet1, data.intersectSet2);
+							$scope.tut.firstIntersection1 = data.intersectSet1;
+							$scope.tut.firstIntersection2 = data.intersectSet2;
 							var i1Name = data.intersectSet1.strEquivalents[data.intersectSet1.eqActiveIndex];
 							var i2Name = data.intersectSet2.strEquivalents[data.intersectSet2.eqActiveIndex];
 							data.intersectSet1 = null;
 							data.intersectSet2 = null;
-							// $scope.setCtrl.set1 = null;
-							// $scope.setCtrl.set2 = null;
 							res.groupIndex = data.sets.length;
 							data.sets.push(res);
+							$scope.tut.firstIntersectionRes = res;
 							data.completeSteps = 7;
 							data.sets.sort(sortGroup);
 							data.updateScopes();
-							// $scope.$apply();
 
 							var newName = res.strEquivalents[0];
 							var txt = "Nice! You conjured the intersection of " + i1Name + " and " + i2Name + ". It has only the elements that were in BOTH sets. Inspect it!";
 							toastr.success(txt, "New Set Type");
+							$scope.tut.flashSetIndex = $scope.tut.sets.indexOf(res);
 							break;
 						case 'set':
 							if ($scope.tut.selectedElements.length > 0) {
@@ -472,7 +476,7 @@ app.controller("tutorialController", [ '$scope', '$rootScope', 'toastr', 'data',
 							} 						
 							break;
 					}
-					break;
+				break; // End step 6 case
 			default:
 				switch (dragData.type) {
 					case 'intersection':
@@ -619,6 +623,43 @@ app.controller("tutorialController", [ '$scope', '$rootScope', 'toastr', 'data',
 					$scope.tut.setElementStyles();
 				} 
 				break;
+			case 7:
+				console.log("case 7 of contents drop");
+				if ($scope.tut.contentsSet === $scope.tut.firstIntersectionRes) {				
+					data.completeSteps = 8;
+					$scope.tut.flashSetIndex = null;
+					data.updateScopes();
+					openToasts.push(toastr.success("Why don't we see anything? Because we don't have the right facts! When you make new sets from old ones, you must make your own facts for them.", "Huh", {
+						onHidden: function() {
+							openToasts.pop();
+							data.tab = 'fact';
+							data.updateScopes();
+							var firstEl = $scope.tut.firstIntersectionRes.elements[0];
+							var newGuy = $scope.tut.firstIntersectionRes;
+							var left = $scope.tut.firstIntersection1;
+							var right = $scope.tut.firstIntersection2;
+
+							var txt = "We know that " + firstEl.name + " must be in " + newGuy.strEquivalents[newGuy.eqActiveIndex] + ", because we know that it is in " + left.strEquivalents[left.eqActiveIndex] + ", and it is in " + right.strEquivalents[left.eqActiveIndex];
+							var flashFacts = [];
+							data.facts.forEach(function	(fact) {
+								var goesIn = fact.elementName === firstEl.name && fact.goesIn && (fact.setSyntax === left.equivalents[left.eqActiveIndex] || fact.setSyntax === right.equivalents[right.eqActiveIndex]);
+								if (goesIn) flashFacts.push(fact);
+							});
+
+							$rootScope.$broadcast("relevantFacts", flashFacts);
+							// $scope.tut.flashSetIndex = $scope.tut.sets.indexOf($scope.tut.firstIntersectionRes);
+
+							openToasts.push(toastr.info(txt, "Thinkin'", {
+								onHidden: function () {
+									openToasts.pop();
+
+								}
+							}));
+
+						}
+					}));
+				}
+				break;
 		}
 		$scope.$apply();
 	};
@@ -695,6 +736,7 @@ app.controller("tutorialController", [ '$scope', '$rootScope', 'toastr', 'data',
 		switch ($scope.tut.completeSteps) {
 			case 2:
 			case 4:
+			case 7:
 				$scope.tut.flashSetIndex = null;
 				$scope.tut.contentsFlash = true;
 				break;
@@ -710,6 +752,7 @@ app.controller("tutorialController", [ '$scope', '$rootScope', 'toastr', 'data',
 		switch ($scope.tut.completeSteps) {
 			case 2:
 			case 4:
+			case 7:
 				$scope.tut.flashSetIndex = $scope.tut.sets.length - 1;	
 				break;
 		}

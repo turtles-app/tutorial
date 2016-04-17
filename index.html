@@ -14,6 +14,8 @@
 	<script type="text/javascript" src="./app.js"></script>
 	<script type="text/javascript" src="./controllers/intersectionController.js"></script>
 	<script type="text/javascript" src="./controllers/factController.js"></script>
+	<script type="text/javascript" src="./controllers/factMakerController.js"></script>
+	<script type="text/javascript" src="./directives/ryDragAndDroppable.js"></script>
 	<script type="text/javascript" src="./directives/ryDroppable.js"></script>
 	<script type="text/javascript" src="./directives/ryDraggable.js"></script>
 	<script type="text/javascript" src="./services/data.js"></script>
@@ -62,7 +64,19 @@
 						</div>
 						<div id="intersect-drop-block"></div>
 					</div>
-				</div>				
+				</div>		
+
+				<div id="factMaker" ng-controller="factMakerController as factMaker" ng-show="tut.tab==='fact'">
+					<div id="factMakerInner"  ry-drag-and-droppable draggable="true" type="fact" index="0" drop-allowed="factMaker.dropAllowed" drop="factMaker.drop" drag-start="factMaker.dragStart" drag-end="factMaker.dragEnd">
+						<img id="factSet" ng-src="./img/fact-square-{{tut.setColors[tut.groupNames.indexOf(factMaker.set.groupName)]}}.png">
+						<p>{{factMaker.set.strEquivalents[factMaker.set.eqActiveIndex]}}</p>
+						<div id="factElement" ng-style="{'background-color': factMaker.element.color}">
+						<p>
+							{{factMaker.element.name}}
+						</p>
+					</div>
+					</div>
+				</div>		
 			</div>
 			<div id="sets" droppable-sets  drop="dropIntoSets" dragover="dragOverSets" ng-class="{flashInf: tut.setsFlash}">
 				<h1>Sets</h1>

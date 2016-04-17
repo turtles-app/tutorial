@@ -4,7 +4,7 @@ app.factory("data", ['$rootScope', function($rootScope) {
 	this.sets = [];
 	this.facts = [];
 	this.tab = 'bob';
-	// this.elements = [];
+	this.elements = [];
 	// this.selectedElements = [];
 	// this.contentsSet = null;
 	// this.elFlash = true;
@@ -18,21 +18,21 @@ app.factory("data", ['$rootScope', function($rootScope) {
 
 
 	var a = new Set("sets", "A");
-	var x = new Element("x", a, self.colors[0]);
-	var y = new Element("y", a, self.colors[1]);
-	var z = new Element("z", a, self.colors[2]);
+	this.x = new Element("x", a, self.colors[0]);
+	this.y = new Element("y", a, self.colors[1]);
+	this.z = new Element("z", a, self.colors[2]);
 	var p = new Element("p", a, self.colors[3]);
 	var q = new Element("q", a, self.colors[4]);
 	var jeffersmith = new Element("jeffersmith", a, self.colors[5]);
 
-	x.groupIndex = 0;
-	y.groupIndex = 1;
-	z.groupIndex = 2;
+	this.x.groupIndex = 0;
+	this.y.groupIndex = 1;
+	this.z.groupIndex = 2;
 	p.groupIndex = 3;
 	q.groupIndex = 4;
 	jeffersmith.groupIndex = 5;
 
-	// this.elements.push(x);
+	this.elements.push(this.x);
 
 	this.updateScopes = function () {
 		$rootScope.$broadcast("dataUpdate", 

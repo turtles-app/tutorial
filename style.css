@@ -142,9 +142,9 @@
 	background-color: #C7E99B;
 	border: 2px solid black;
 	border-radius: 9%;
-	height: 40%;
+	height: 35%;
 	width: 35%;
-	top: 60%;
+	top: 65%;
 	left: 25%;
 	padding-left: 5%;
 }
@@ -229,4 +229,53 @@ h3 {
 	position: absolute;
 	left: 20%;
 	top: 40%;
+}
+
+#factMaker {
+	height: 412px;
+	width: 497px;
+	position: absolute;
+	display: block;
+	left: 20%;
+}
+
+#factMakerInner {
+	position: absolute;
+	display: block;
+	height: 412px;
+	width: 497px;
+	background-image: url("./img/triangle-big-2.png");
+}
+
+#factSet {
+	height: 211px;
+	width: 211px;
+	/*background-image: url("./img/fact-square-green.png");*/
+	position: absolute;
+	left: 29%;
+	top: 46%;
+}
+
+#factMakerInner p {
+	position: absolute;
+	top: 45%;
+	left: 45%;
+	text-align: center;
+}
+
+#factElement {
+	display: block;
+	position: absolute;
+	border-radius: 50%;
+	width: 100px;
+	height: 100px;
+	border:2px solid black;
+	left: 40%;
+	top: 60%;
+}
+
+#factElement p {
+	position: absolute;
+	top: 38%;
+	left: 43%;
 }

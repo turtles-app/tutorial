@@ -200,11 +200,10 @@ app.directive("droppableCustom", function() {
 });
 
 app.controller("tutorialController", [ '$scope', '$rootScope', 'toastr', 'data', function($scope,  $rootScope, toastr, data) {
-	
 	this.completeSteps = data.completeSteps;
 	this.tab = 'bob';
 	this.sets = [];
-	this.elements = [];
+	this.elements = data.elements;
 	this.selectedElements = [];
 	// this.facts = data.facts;
 	this.inspectorFacts = [];
@@ -220,31 +219,36 @@ app.controller("tutorialController", [ '$scope', '$rootScope', 'toastr', 'data',
 	this.firstIntersection1    	= null;
 	this.firstIntersection2 	= null;
 	this.firstIntersectionRes 	= null;
+	this.setColors = ["green", "orange", "blue"];
+	this.groupNames = ["sets", "intersection", "union"];
 
 	// this.elStyle = "{'-webkit-animation': 'fading 4s infinite', 'animation': 'fading 4s infinite'}";
 
 
-	var a = new Set("sets", "A");
-	var x = new Element("x", a, $scope.tut.colors[0]);
-	var y = new Element("y", a, $scope.tut.colors[1]);
-	var z = new Element("z", a, $scope.tut.colors[2]);
-	var p = new Element("p", a, $scope.tut.colors[3]);
-	var q = new Element("q", a, $scope.tut.colors[4]);
-	var jeffersmith = new Element("jeffersmith", a, $scope.tut.colors[5]);
+	// var a = new Set("sets", "A");
+	// var x = new Element("x", a, $scope.tut.colors[0]);
+	// var y = new Element("y", a, $scope.tut.colors[1]);
+	// var z = new Element("z", a, $scope.tut.colors[2]);
+	// var p = new Element("p", a, $scope.tut.colors[3]);
+	// var q = new Element("q", a, $scope.tut.colors[4]);
+	// var jeffersmith = new Element("jeffersmith", a, $scope.tut.colors[5]);
 
-	x.groupIndex = 0;
-	y.groupIndex = 1;
-	z.groupIndex = 2;
-	p.groupIndex = 3;
-	q.groupIndex = 4;
-	jeffersmith.groupIndex = 5;
+	// x.groupIndex = 0;
+	// y.groupIndex = 1;
+	// z.groupIndex = 2;
+	// p.groupIndex = 3;
+	// q.groupIndex = 4;
+	// jeffersmith.groupIndex = 5;
 
-	this.elements.push(x);
+	// this.elements.push(x);
 
 
 	$scope.dropIntoBob = function (id) {
 		$scope.tut.completeSteps = 1;
 		$scope.tut.selectedElements.push($scope.tut.elements.splice(0, 1)[0]);
+		data.elements = $scope.tut.elements;
+		data.completeSteps = $scope.tut.completeSteps;
+		data.updateScopes();		
 		$scope.tut.bobFlash = false;
 		toastr.clear(openToasts.pop());;
 		openToasts.push(toastr.success('Every element is in some sets, and not in others.', "Nice!", {
@@ -276,7 +280,7 @@ app.controller("tutorialController", [ '$scope', '$rootScope', 'toastr', 'data',
 							openToasts.pop();
 							if ($scope.tut.completeSteps === 2) {
 								
-								$scope.tut.elements.push(y, z);
+								$scope.tut.elements.push(data.y, data.z);
 								openToasts.push(toastr.info("Two new Elements have appeared! They aren't in Bob.", "New Elements", 
 								{
 									onHidden: function(clicked) {
@@ -294,13 +298,14 @@ app.controller("tutorialController", [ '$scope', '$rootScope', 'toastr', 'data',
 						}
 					}));
 					var bob = new Set("sets", "Bob");
-					bob.putIn(x);
+					bob.putIn(data.x);
 					bob.groupIndex = 0;
 					data.sets.push(bob);
 					data.tab = '';
 					data.publishSet(bob);
-					data.updateScopes();
 					$scope.tut.elements.push($scope.tut.selectedElements.splice(0, 1)[0]);
+					data.elements = $scope.tut.elements;
+					data.updateScopes();					
 				}
 				break;
 			case 5:
@@ -326,6 +331,8 @@ app.controller("tutorialController", [ '$scope', '$rootScope', 'toastr', 'data',
 						data.updateScopes();
 						$scope.tut.elements = $scope.tut.elements.concat($scope.tut.selectedElements.splice(0, $scope.tut.selectedElements.length));
 						$scope.tut.elements.sort(sortGroup);
+						data.elements = $scope.tut.elements;
+						data.updateScopes();						
 						$scope.tut.customSetName = '';
 						data.publishSet(newSet);
 					} else {
@@ -435,6 +442,8 @@ app.controller("tutorialController", [ '$scope', '$rootScope', 'toastr', 'data',
 									data.publishSet(newSet);
 									$scope.tut.elements = $scope.tut.elements.concat($scope.tut.selectedElements.splice(0, $scope.tut.selectedElements.length));
 									$scope.tut.elements.sort(sortGroup);
+									data.elements = $scope.tut.elements;
+									data.updateScopes();									
 									$scope.tut.customSetName = '';
 
 									// if (setIsACopy) {
@@ -517,6 +526,8 @@ app.controller("tutorialController", [ '$scope', '$rootScope', 'toastr', 'data',
 								data.publishSet(newSet);
 								$scope.tut.elements = $scope.tut.elements.concat($scope.tut.selectedElements.splice(0, $scope.tut.selectedElements.length));
 								$scope.tut.elements.sort(sortGroup);
+								data.elements = $scope.tut.elements;
+								data.updateScopes();								
 								$scope.tut.customSetName = '';
 
 								// if (setIsACopy) {
@@ -624,7 +635,6 @@ app.controller("tutorialController", [ '$scope', '$rootScope', 'toastr', 'data',
 				} 
 				break;
 			case 7:
-				console.log("case 7 of contents drop");
 				if ($scope.tut.contentsSet === $scope.tut.firstIntersectionRes) {				
 					data.completeSteps = 8;
 					$scope.tut.flashSetIndex = null;
@@ -649,7 +659,7 @@ app.controller("tutorialController", [ '$scope', '$rootScope', 'toastr', 'data',
 							$rootScope.$broadcast("relevantFacts", flashFacts);
 							// $scope.tut.flashSetIndex = $scope.tut.sets.indexOf($scope.tut.firstIntersectionRes);
 
-							openToasts.push(toastr.info(txt, "Thinkin'", {
+							openToasts.push(toastr.info(txt, "Making a new fact'", {
 								onHidden: function () {
 									openToasts.pop();
 
@@ -666,6 +676,8 @@ app.controller("tutorialController", [ '$scope', '$rootScope', 'toastr', 'data',
 
 	$scope.dropIntoCustom = function (index) {
 		$scope.tut.selectedElements.push($scope.tut.elements.splice(index, 1)[0]);
+		data.elements = $scope.tut.elements;
+		data.updateScopes();
 		$scope.$apply();
 	};
 
@@ -806,6 +818,7 @@ app.controller("tutorialController", [ '$scope', '$rootScope', 'toastr', 'data',
 		$scope.tut.completeSteps = update.steps;
 		$scope.tut.sets = update.sets;
 		$scope.tut.tab = update.tab;
+		$scope.tut.elements = update.elements;
 	});
 
 	// $rootScope.$on("publishFacts", function (ev, update) {

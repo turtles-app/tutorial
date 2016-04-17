@@ -279,3 +279,18 @@ h3 {
 	top: 38%;
 	left: 43%;
 }
+
+#justification1 {
+	background-image: url("./img/fact.png");
+	width: 120px;
+	height: 100px;
+	position: absolute;
+	bottom: 55%;
+	right: 35%;
+}
+
+#justification1 p {
+	position: absolute;
+	top: 50%;
+	left: 20%;
+}

@@ -9,6 +9,7 @@ app.factory("data", ['$rootScope', function($rootScope) {
 	this.newGuy = null;
 	this.left = null;
 	this.right = null;
+
 	// this.selectedElements = [];
 	// this.contentsSet = null;
 	// this.elFlash = true;
@@ -79,5 +80,7 @@ app.factory("data", ['$rootScope', function($rootScope) {
 
 		return res;
 	}
+
+	
 	return this;	
 }]);

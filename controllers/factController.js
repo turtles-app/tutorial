@@ -7,7 +7,17 @@ app.controller("factController", ['$scope', '$rootScope', 'data', function($scop
 		$rootScope.$broadcast("publishFacts", {
 			facts: self.facts
 		});
-	}
+	};
+
+	$rootScope.$on('removeFacts',function (ev, update) {
+		update.facts.forEach(function (fact) {
+			data.facts.splice(data.facts.indexOf(fact, 1));
+			data.updateScopes();
+			if (self.flashingFacts.indexOf(fact) >= 0)  {
+				self.flashingFacts.splice(self.flashingFacts.indexOf(fact), 1); 
+			};
+		});
+	});
 
 	$rootScope.$on('publishSet', function (ev, update) {
 		var newFacts = [];

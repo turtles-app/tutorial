@@ -3,6 +3,9 @@ app.controller("factMakerController", ['$scope', '$rootScope', 'toastr', 'data',
 	this.element = null;
 	this.set = null;
 	this.justifications = [];
+	this.expectedJustifications = [];
+
+
 	this.dropAllowed = function () {
 		switch (dragData.type) {
 			case 'element':
@@ -53,7 +56,7 @@ app.controller("factMakerController", ['$scope', '$rootScope', 'toastr', 'data',
 														openToasts.pop();
 														var fact1 = data.findFact(self.element, true, data.left, data.facts);
 														var fact2 = data.findFact(self.element, true, data.right, data.facts);
-														console.log([fact1, fact2]);
+														self.expectedJustifications = [fact1, fact2];
 														$rootScope.$broadcast("relevantFacts", {
 															facts: [fact1, fact2]
 														});														
@@ -107,6 +110,7 @@ app.controller("factMakerController", ['$scope', '$rootScope', 'toastr', 'data',
 															openToasts.pop();
 															var fact1 = data.findFact(self.element, true, data.left, data.facts);
 															var fact2 = data.findFact(self.element, true, data.right, data.facts);
+															self.expectedJustifications = [fact1, fact2];
 															$rootScope.$broadcast("relevantFacts", {
 																facts: [fact1, fact2]
 															});														
@@ -167,7 +171,66 @@ app.controller("factMakerController", ['$scope', '$rootScope', 'toastr', 'data',
 							break;
 				}
 				break; // 'element', or 'set' case
-		}
+			case 'fact':
+				switch (data.completeSteps) {
+					case 8:
+						if (self.expectedJustifications.indexOf(data.facts[dragData.index]) >= 0) {
+							toastr.clear(openToasts.pop());
+							self.justifications.push(data.facts.splice(dragData.index, 1)[0]);
+							data.updateScopes();
+							$rootScope.$broadcast("removeFacts", {
+								facts: [data.facts[dragData.index]]
+							});
+							switch (self.justifications.length) {
+								case 1:
+									openToasts.push(toastr.success("That's it! We need one more fact to prove that " + data.firstEl.name + " is in " + data.newGuy.strEquivalents[data.newGuy.eqActiveIndex], "Good", 
+										{
+											onHidden: function () {
+												openToasts.pop();
+											}
+										}
+									));
+									break;
+								case 2:
+									openToasts.push(toastr.success("These two facts justify our new fact. Now we can conjur the new fact by dragging it into the FACTS on the left", "Very Good", 
+										{
+											onHidden: function () {
+												openToasts.pop();
+											}
+										}
+									));
+									break;
+							}
+						} else { //irrelevant fact
+							if (data.facts[dragData.index].elementName != data.firstEl.name) { //Wrong element
+								var txt = "That fact is about the element " + data.facts[dragData.index].elementName + ", but we need to use one about " + data.firstEl.name +".";
+								toastr.clear(openToasts.pop());
+								openToasts.push(toastr.warning(txt, "Almost", 
+									{
+										onHidden: function () {
+											openToasts.pop();
+										}
+									}
+								))
+
+							} else { // Wrong set
+								var txt = "That fact is about the set " + data.facts[dragData.index].setSyntax + ", but we need one that's about " + data.newGuy.strEquivalents[data.newGuy.eqActiveIndex];
+								toastr.clear(openToasts.pop());
+								openToasts.push(toastr.warning(txt, "Almost", 
+									{
+										onHidden: function () {
+											openToasts.pop();
+										}
+									}
+								)) 
+							}
+						}
+						break; // Seteps = 8
+					default:
+						break; //default Steps
+				}
+				break;
+		} // Dragdata switch (outer)
 
 	};
 

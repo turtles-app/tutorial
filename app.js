@@ -644,24 +644,30 @@ app.controller("tutorialController", [ '$scope', '$rootScope', 'toastr', 'data',
 							openToasts.pop();
 							data.tab = 'fact';
 							data.updateScopes();
-							var firstEl = $scope.tut.firstIntersectionRes.elements[0];
-							var newGuy = $scope.tut.firstIntersectionRes;
-							var left = $scope.tut.firstIntersection1;
-							var right = $scope.tut.firstIntersection2;
+							data.firstEl = $scope.tut.firstIntersectionRes.elements[0];
+							data.newGuy = $scope.tut.firstIntersectionRes;
+							data.left = $scope.tut.firstIntersection1;
+							data.right = $scope.tut.firstIntersection2;
 
-							var txt = "We know that " + firstEl.name + " must be in " + newGuy.strEquivalents[newGuy.eqActiveIndex] + ", because we know that it is in " + left.strEquivalents[left.eqActiveIndex] + ", and it is in " + right.strEquivalents[left.eqActiveIndex];
+							var txt = "We know that " + data.firstEl.name + " must be in " + data.newGuy.strEquivalents[data.newGuy.eqActiveIndex] + ", because we know that it is in " + data.left.strEquivalents[data.left.eqActiveIndex] + ", and it is in " + data.right.strEquivalents[data.left.eqActiveIndex];
 							var flashFacts = [];
 							data.facts.forEach(function	(fact) {
-								var goesIn = fact.elementName === firstEl.name && fact.goesIn && (fact.setSyntax === left.equivalents[left.eqActiveIndex] || fact.setSyntax === right.equivalents[right.eqActiveIndex]);
+								var goesIn = fact.elementName === data.firstEl.name && fact.goesIn && (fact.setSyntax === data.left.equivalents[data.left.eqActiveIndex] || fact.setSyntax === data.right.equivalents[data.right.eqActiveIndex]);
 								if (goesIn) flashFacts.push(fact);
 							});
 
 							$rootScope.$broadcast("relevantFacts", flashFacts);
 							// $scope.tut.flashSetIndex = $scope.tut.sets.indexOf($scope.tut.firstIntersectionRes);
 
-							openToasts.push(toastr.info(txt, "Making a new fact'", {
+							openToasts.push(toastr.info(txt, "Making a new fact", {
 								onHidden: function () {
 									openToasts.pop();
+									txt = "Drag " + data.firstEl.name + " into the FACT maker";
+									openToasts.push(toastr.info(txt, "Facts have one element", {
+										onHidden: function () {
+											openToasts.pop();
+										}
+									}));
 
 								}
 							}));

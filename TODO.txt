@@ -9,10 +9,21 @@ General:
 	-	Normalize toasts
 	-	bottom % for contentsElements (has to be fixed px atm)
 
+Fact Maker:
+	-	Text Cases for dragging elements and sets in
+	-	Dragging justifications in
+	-	Flash the elements, sets, and facts, at appropriate times
+	-	Make entire image draggable as one unit
 Inspector:
 	-	Setting/clearing functions
 	-	Differentiate between NOT IN and UNKNOWN elements
 
+Fact Tree:
+	-	Dynamic fact images based on set type and element color
+
+Sets:
+	-	Dynamic set images to illustrate set type
+	
 Refactorizations:
 	-	Separate controllers and directives in to individual files
 	-	onHidden event handler nesting solution

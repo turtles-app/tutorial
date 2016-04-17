@@ -5,6 +5,10 @@ app.factory("data", ['$rootScope', function($rootScope) {
 	this.facts = [];
 	this.tab = 'bob';
 	this.elements = [];
+	this.firstEl = null;
+	this.newGuy = null;
+	this.left = null;
+	this.right = null;
 	// this.selectedElements = [];
 	// this.contentsSet = null;
 	// this.elFlash = true;
@@ -63,6 +67,17 @@ app.factory("data", ['$rootScope', function($rootScope) {
 			facts: facts
 		});
 		return facts;
+	}
+
+	this.findFact = function (element, isIn, set, facts) {
+		var res = false;
+		facts.forEach(function(fact) {
+			if (element.name === fact.elementName && isIn === fact.isIn && _.isEqual(set.equivalents[set.eqActiveIndex], fact.setSyntax) ) {
+				res = fact;
+			}
+		});
+
+		return res;
 	}
 	return this;	
 }]);

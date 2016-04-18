@@ -9,6 +9,7 @@ app.factory("data", ['$rootScope', function($rootScope) {
 	this.newGuy = null;
 	this.left = null;
 	this.right = null;
+	this.factInfo = null;
 
 	// this.selectedElements = [];
 	// this.contentsSet = null;
@@ -47,7 +48,8 @@ app.factory("data", ['$rootScope', function($rootScope) {
 				elements: self.elements,
 				intersectSet1: self.intersectSet1,
 				intersectSet2: self.intersectSet2,
-				tab: self.tab
+				tab: self.tab,
+				facts: self.facts
 			}
 			);
 	};

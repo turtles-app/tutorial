@@ -676,6 +676,12 @@ app.controller("tutorialController", [ '$scope', '$rootScope', 'toastr', 'data',
 					}));
 				}
 				break;
+			case 9:
+				if (_.isEqual($scope.tut.contentsSet, data.newGuy) ) {
+					data.completeSteps = 10;
+					
+				}
+				break;
 		}
 		$scope.$apply();
 	};
@@ -755,6 +761,7 @@ app.controller("tutorialController", [ '$scope', '$rootScope', 'toastr', 'data',
 			case 2:
 			case 4:
 			case 7:
+			case 9:
 				$scope.tut.flashSetIndex = null;
 				$scope.tut.contentsFlash = true;
 				break;
@@ -772,6 +779,9 @@ app.controller("tutorialController", [ '$scope', '$rootScope', 'toastr', 'data',
 			case 4:
 			case 7:
 				$scope.tut.flashSetIndex = $scope.tut.sets.length - 1;	
+				break;
+			case 9:
+				$scope.tut.flashSetIndex = $scope.tut.sets.indexOf(data.newGuy);
 				break;
 		}
 		$scope.$apply();
@@ -825,6 +835,11 @@ app.controller("tutorialController", [ '$scope', '$rootScope', 'toastr', 'data',
 		$scope.tut.sets = update.sets;
 		$scope.tut.tab = update.tab;
 		$scope.tut.elements = update.elements;
+	});
+
+	$rootScope.$on("firstCustomFact", function (ev) {
+		// $scope.tut.contentsFlash = true;
+		$scope.tut.flashSetIndex = $scope.tut.sets.indexOf(data.newGuy);
 	});
 
 	// $rootScope.$on("publishFacts", function (ev, update) {

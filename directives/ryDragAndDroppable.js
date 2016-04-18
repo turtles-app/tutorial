@@ -28,6 +28,8 @@ app.directive("ryDragAndDroppable", function () {
 			el.addEventListener("dragend", function (ev) {
 				dragData.type = "";
 				dragData.index = null;
+				var dragEnd = scope.dragEnd();
+				dragEnd();
 			});
 			///////////////////
 			// Drop Handlers //

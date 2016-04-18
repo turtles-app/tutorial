@@ -26,11 +26,14 @@
 			<div id="progressBar">
 				<div ng-repeat="step in [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16]" class="step" ng-class="{complete: step <= tut.completeSteps, incomplete: step > tut.completeSteps}"></div>
 			</div>
-			<div ng-controller="factController as facts" id="facts"><h1>Facts</h1>
-				<div ng-repeat="fact in facts.facts" class="fact" ng-class="{flashInf: facts.flashingFacts.indexOf(fact) >= 0}" ry-draggable type="'fact'" index="$index">
-					<p>
-						{{fact.str}}
-					</p>
+			<div ng-controller="factController as facts" id="facts" ng-class="{'flashInf': facts.flash}">
+				<div id="factsInner" ry-droppable drop-allowed="facts.dropAllowed" drop="facts.drop">
+					<h1>{{facts.facts.length}} Facts</h1>
+					<div ng-repeat="fact in facts.facts" class="fact" ng-class="{flashInf: facts.flashingFacts.indexOf(fact) >= 0}" ry-draggable type="'fact'" index="$index">
+						<p>
+							{{fact.str}}
+						</p>
+					</div>
 				</div>
 
 			</div>
@@ -67,7 +70,7 @@
 				</div>		
 
 				<div id="factMaker" ng-controller="factMakerController as factMaker" ng-show="tut.tab==='fact'">
-					<div id="factMakerInner"  ry-drag-and-droppable draggable="true" type="fact" index="0" drop-allowed="factMaker.dropAllowed" drop="factMaker.drop" drag-start="factMaker.dragStart" drag-end="factMaker.dragEnd">
+					<div id="factMakerInner"  ry-drag-and-droppable draggable="true" type="'factMaker'" index="0" drop-allowed="factMaker.dropAllowed" drop="factMaker.drop" drag-start="factMaker.dragStart" drag-end="factMaker.dragEnd" ng-class="{'flashInf': factMaker.flash}">
 						<img id="factSet" ng-src="./img/fact-square-{{tut.setColors[tut.groupNames.indexOf(factMaker.set.groupName)]}}.png">
 						<p>{{factMaker.set.strEquivalents[factMaker.set.eqActiveIndex]}}</p>
 						<div id="factElement" ng-style="{'background-color': factMaker.element.color}">
@@ -76,8 +79,16 @@
 						</p>
 						</div>
 						<div ng-if="factMaker.justifications.length > 0" id="justification1">
-							<p>{{factMaker.justifications[0].str}}</p>
+							<div class='factText'>{{factMaker.justifications[0].str}}</div>
 						</div>
+
+						<div ng-if="factMaker.justifications.length > 1" id="justification2">
+							<div class='factText'>{{factMaker.justifications[1].str}}</div>
+						</div>	
+
+						<div ng-if="factMaker.justifications.length > 2" id="justification3">
+							<div class='factText'>{{factMaker.justifications[2].str}}</div>
+						</div>												
 					</div>
 				</div>		
 			</div>

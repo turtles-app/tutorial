@@ -4,6 +4,7 @@ app.controller("factMakerController", ['$scope', '$rootScope', 'toastr', 'data',
 	this.set = null;
 	this.justifications = [];
 	this.expectedJustifications = [];
+	this.flash = false;
 
 
 	this.dropAllowed = function () {
@@ -13,12 +14,15 @@ app.controller("factMakerController", ['$scope', '$rootScope', 'toastr', 'data',
 			case 'fact':
 				return true;
 				break;
-
+			default:
+				return false;
+				break;
 		}
-		return true;
 	};
 
 	this.drop = function () {
+		console.log("drop start. Logging facts length");
+		console.log(data.facts.length);
 		switch (dragData.type) {
 			case "element":
 			case "set":
@@ -178,9 +182,9 @@ app.controller("factMakerController", ['$scope', '$rootScope', 'toastr', 'data',
 							toastr.clear(openToasts.pop());
 							self.justifications.push(data.facts.splice(dragData.index, 1)[0]);
 							data.updateScopes();
-							$rootScope.$broadcast("removeFacts", {
-								facts: [data.facts[dragData.index]]
-							});
+							// $rootScope.$broadcast("removeFacts", {
+							// 	facts: [data.facts[dragData.index]]
+							// });
 							switch (self.justifications.length) {
 								case 1:
 									openToasts.push(toastr.success("That's it! We need one more fact to prove that " + data.firstEl.name + " is in " + data.newGuy.strEquivalents[data.newGuy.eqActiveIndex], "Good", 
@@ -192,6 +196,8 @@ app.controller("factMakerController", ['$scope', '$rootScope', 'toastr', 'data',
 									));
 									break;
 								case 2:
+									self.flash = true;
+									// $scope.$apply();
 									openToasts.push(toastr.success("These two facts justify our new fact. Now we can conjur the new fact by dragging it into the FACTS on the left", "Very Good", 
 										{
 											onHidden: function () {
@@ -211,7 +217,7 @@ app.controller("factMakerController", ['$scope', '$rootScope', 'toastr', 'data',
 											openToasts.pop();
 										}
 									}
-								))
+								));
 
 							} else { // Wrong set
 								var txt = "That fact is about the set " + data.facts[dragData.index].setSyntax + ", but we need one that's about " + data.newGuy.strEquivalents[data.newGuy.eqActiveIndex];
@@ -235,10 +241,33 @@ app.controller("factMakerController", ['$scope', '$rootScope', 'toastr', 'data',
 	};
 
 	this.dragStart = function () {
-		console.log("dragStart fact maker");
+		data.factInfo = {
+			set: self.set,
+			element: self.element,
+			justifications: self.justifications,
+		};
+		switch (data.completeSteps) {
+			case 8:
+				if (self.flash) {
+					self.flash = false;
+					$rootScope.$broadcast("toggleFlashFacts");
+				}
+				break;
+		}
 	};
 
 	this.dragEnd = function () {
-		console.log("dragEnd fact maker");
+		data.factInfo = null;
+		switch (data.completeSteps) {
+			case 8:
+				$rootScope.$broadcast("toggleFlashFacts");
+				if (self.justifications.length === 2 && _.isEqual(self.set, data.newGuy) && _.isEqual(self.element, data.firstEl) ) {
+					self.flash = true;
+					$scope.$apply();
+				} else {
+					console.log("improper fact maker");
+				}
+				break;
+		}
 	};
 }]);

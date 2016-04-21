@@ -4,7 +4,6 @@ TODO
 
 General:
 	-	Reduce Text
-	-	Update set colors
 	-	Step 4 handle making a new set misplay (player doesn't drag new set to setContents)
 	-	Normalize toasts
 	-	bottom % for contentsElements (has to be fixed px atm)

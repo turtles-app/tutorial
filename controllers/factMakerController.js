@@ -21,8 +21,6 @@ app.controller("factMakerController", ['$scope', '$rootScope', 'toastr', 'data',
 	};
 
 	this.drop = function () {
-		console.log("drop start. Logging facts length");
-		console.log(data.facts.length);
 		switch (dragData.type) {
 			case "element":
 			case "set":

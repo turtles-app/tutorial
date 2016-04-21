@@ -41,7 +41,6 @@ app.controller("factController", ['$scope', '$rootScope', 'toastr', 'data', func
 			switch (data.completeSteps) {
 				case 8:
 					$rootScope.$broadcast("firstCustomFact");
-					console.log($scope.tut);
 					data.completeSteps = 9;
 					data.tab = '';
 					data.updateScopes();

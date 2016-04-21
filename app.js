@@ -677,9 +677,25 @@ app.controller("tutorialController", [ '$scope', '$rootScope', 'toastr', 'data',
 				}
 				break;
 			case 9:
+				console.log($scope.tut.contentsSet);
+				console.log(data.newGuy);
+				console.log(_.isEqual($scope.tut.contentsSet, data.newGuy));
 				if (_.isEqual($scope.tut.contentsSet, data.newGuy) ) {
-					data.completeSteps = 10;
-					
+					data.completeSteps = 10;					
+					data.updateScopes();
+					toastr.clear(openToasts.pop());
+					openToasts.push(toastr.success("With your new fact, the inspector can show you what's inside of " + data.newGuy.strEquivalents[data.newGuy.eqActiveIndex] + ".", "Good", 
+						{
+							onHidden: function () {
+								openToasts.pop();
+								openToasts.push(toastr.info("Can you make an intersection that has z in it?", 
+									{
+										onHidden: function () {
+											openToasts.pop();
+										}
+									}));
+							}
+						}));
 				}
 				break;
 		}

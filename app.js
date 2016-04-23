@@ -214,6 +214,7 @@ app.controller("tutorialController", [ '$scope', '$rootScope', 'toastr', 'data',
 	this.contentsFlash = false;
 	this.showContents = false;
 	this.flashSetIndex = null;
+	this.elementsFlashing = [];
 	this.colors = ['#970000','#E6943B','#CCC508','#C0009C','#EE2998','#27E493'];
 	this.customSetName = '';
 	this.firstIntersection1    	= null;
@@ -486,6 +487,107 @@ app.controller("tutorialController", [ '$scope', '$rootScope', 'toastr', 'data',
 							break;
 					}
 				break; // End step 6 case
+				case 10:
+					// switch (dragData.type) {
+						var res = intersection("name", data.intersectSet1, data.intersectSet2);
+						data.sets.push(data.intersectSet1, data.intersectSet2);
+						var tempInt1 = data.intersectSet1;
+						var tempInt2 = data.intersectSet2;
+						data.intersectSet1 = null;
+						data.intersectSet2 = null;
+						res.groupIndex = data.sets.length;
+						data.sets.push(res);
+						data.updateScopes();
+
+						if (res.elements.indexOf(data.z) >= 0) {
+							var extraElementNames = [];
+							console.log("Logging elements in interesection res");
+							res.elements.forEach(function (element) {
+								console.log(element);
+								if (!_.isEqual(element, data.z)) {
+									extraElementNames.push(element.name);
+								}
+							});
+							var extraLen = extraElementNames.length;
+							if (extraLen === 0) { //Winning move
+								toastr.clear(openToasts.pop());
+								data.completeSteps = 11;
+								data.updateScopes();
+								openToasts.push(toastr.success("Your new intersection only has z", "Awesome!",
+									{
+										onHidden: function () {
+											toastr.clear(openToasts.pop());
+											data.tab = 'fact';
+											data.updateScopes();
+											openToasts.push(toastr.info("Let's prove that z is in " + res.strEquivalents[res.eqActiveIndex]), "How do we know that?", 
+												{
+													onHidden: function () {
+														openToasts.pop();
+													}
+												});
+										}
+									}));
+							} else { //Intersection had extra elements
+								var nameStr = "";
+								extraElementNames.forEach(function (name) {
+									if (nameStr === "") {
+										nameStr = nameStr + name;
+									} else {
+										nameStr = nameStr + ", " + name;
+									}
+								});
+								toastr.clear(openToasts.pop());
+								openToasts.push(toastr.warning("Your intersection included z, but it also had: " + nameStr + ". Use two sets that have ONLY z in common.", "Very Close!",
+									{
+										onHidden: function () {
+											openToasts.pop();
+										}
+									}));
+							}
+						} else { //Intersection didn't include z
+							var zInFirst = false;
+							var zinSecond = false;
+							var name1 = tempInt1.strEquivalents[tempInt1.eqActiveIndex];
+							var name2 = tempInt2.strEquivalents[tempInt2.eqActiveIndex];
+
+							tempInt1.elements.forEach(function (element) {
+								if (_.isEqual(element, data.z)) zInFirst = true;
+							});
+
+							tempInt2.elements.forEach(function (element) {
+								if (_.isEqual(element, data.z)) zinSecond = true;
+							});
+
+							var inNeither = !(zInFirst || zinSecond);
+							if (inNeither) { //z in neither set from intersection
+								toastr.clear(openToasts.pop());
+								toastr.warning("z isn't in " + name1 + ", or in " + name2 + ". Use two sets that both have z", "Nice Try", 
+									{
+										onHidden: function () {
+											openToasts.pop();
+										}
+									});
+							} else if (zInFirst) { //z only in first set from intersection
+								toastr.clear(openToasts.pop());
+								openToasts.push(toastr.warning("z is in " + name1 + ", not in "  + name2 + ", so z isn't in their intersection. Use two sets that both have z", "Partial Credit",
+									{
+										onHidden: function () {
+											openToasts.pop();
+										}
+									}));
+							} else if (zinSecond) { //Z only in second set from intersection
+								toastr.clear(openToasts.pop());
+								openToasts.push(toastr.warning("z is in " + name2 + ", not in " + name1 + ", so z isn't in their intersection. Use two sets that both have z", "Partial Credit", 
+									{
+										onHidden: function () {
+											openToasts.pop();
+										}
+									}));
+							}
+						}
+					// 	break;
+					// }
+					break;
 			default:
 				switch (dragData.type) {
 					case 'intersection':
@@ -495,12 +597,12 @@ app.controller("tutorialController", [ '$scope', '$rootScope', 'toastr', 'data',
 						var i2Name = data.intersectSet2.strEquivalents[data.intersectSet2.eqActiveIndex];
 						data.intersectSet1 = null;
 						data.intersectSet2 = null;
-						// $scope.setCtrl.set1 = null;
-						// $scope.setCtrl.set2 = null;
 						res.groupIndex = data.sets.length;
 						data.sets.push(res);
 						data.completeSteps = 7;
 						data.updateScopes();					
+						// $scope.setCtrl.set1 = null;
+						// $scope.setCtrl.set2 = null;
 						break;
 
 					case 'set':
@@ -659,10 +761,14 @@ app.controller("tutorialController", [ '$scope', '$rootScope', 'toastr', 'data',
 							$rootScope.$broadcast("relevantFacts", flashFacts);
 							// $scope.tut.flashSetIndex = $scope.tut.sets.indexOf($scope.tut.firstIntersectionRes);
 
+							$scope.tut.contentsSet = null;
+							$scope.tut.clearElementStyles();
+							$scope.tut.inspectorFacts = [];
 							openToasts.push(toastr.info(txt, "Making a new fact", {
 								onHidden: function () {
 									openToasts.pop();
 									txt = "Drag " + data.firstEl.name + " into the FACT maker";
+									$scope.tut.elementsFlashing = [data.firstEl];
 									openToasts.push(toastr.info(txt, "Facts have one element", {
 										onHidden: function () {
 											openToasts.pop();
@@ -677,17 +783,21 @@ app.controller("tutorialController", [ '$scope', '$rootScope', 'toastr', 'data',
 				}
 				break;
 			case 9:
-				console.log($scope.tut.contentsSet);
-				console.log(data.newGuy);
-				console.log(_.isEqual($scope.tut.contentsSet, data.newGuy));
 				if (_.isEqual($scope.tut.contentsSet, data.newGuy) ) {
-					data.completeSteps = 10;					
+					data.completeSteps = 10;
+					$scope.tut.contentsSet = null;
+					$scope.tut.inspectorFacts = [];
+					$rootScope.$broadcast("clearInspector");					
+					$scope.tut.clearElementStyles();		
+					data.tab = 'intersection';			
 					data.updateScopes();
 					toastr.clear(openToasts.pop());
 					openToasts.push(toastr.success("With your new fact, the inspector can show you what's inside of " + data.newGuy.strEquivalents[data.newGuy.eqActiveIndex] + ".", "Good", 
 						{
 							onHidden: function () {
 								openToasts.pop();
+								$scope.tut.elementsFlashing = [];
+								$scope.tut.flashSetIndex = null;
 								openToasts.push(toastr.info("Can you make an intersection that has z in it?", 
 									{
 										onHidden: function () {
@@ -731,19 +841,35 @@ app.controller("tutorialController", [ '$scope', '$rootScope', 'toastr', 'data',
 						this.elFlash = false;
 					}
 					break;
+				case 8:
+					var elName = $scope.tut.elements[dragData.index];
+					if (_.isEqual(elName, data.firstEl)) {
+						$scope.tut.elementsFlashing = [];
+						$rootScope.$broadcast("flashFactMaker");
+					}
+					break;
 			}
 			$scope.$apply();
 	};
 
 	this.endDragEl = function (ev) {
-		if ($scope.tut.completeSteps === 0) {
-			$scope.tut.elFlash = true;
-			$scope.tut.bobFlash = false;
-			dragData.id = '';
-			dragData.index = null;
-			dragData.type = '';
-			$scope.$apply();
+		switch ($scope.tut.completeSteps) {
+			case 0:
+				$scope.tut.elFlash = true;
+				$scope.tut.bobFlash = false;
+				dragData.id = '';
+				dragData.index = null;
+				dragData.type = '';
+			break;
+			case 8:
+				$scope.tut.contentsFlash = false;
+				if (!_.isEqual(data.factMakerEl, data.firstEl)) {
+					$scope.tut.elementsFlashing = [data.firstEl];
+					$rootScope.$broadcast("unflashFactMaker");
+				}
+				break;
 		}
+			$scope.$apply();
 	};
 
 	this.dragBob = function (ev) {
@@ -781,6 +907,13 @@ app.controller("tutorialController", [ '$scope', '$rootScope', 'toastr', 'data',
 				$scope.tut.flashSetIndex = null;
 				$scope.tut.contentsFlash = true;
 				break;
+			case 8:
+				// console.log(data.factMakerSet);
+				if (_.isEqual(data.sets[dragData.index], data.newGuy)) {
+					$scope.tut.flashSetIndex = null;
+					$rootScope.$broadcast("flashFactMaker");
+				}
+				break;
 		}
 		$scope.$apply();
 	};
@@ -795,6 +928,21 @@ app.controller("tutorialController", [ '$scope', '$rootScope', 'toastr', 'data',
 			case 4:
 			case 7:
 				$scope.tut.flashSetIndex = $scope.tut.sets.length - 1;	
+				break;
+			case 8:
+				console.log("case 8");
+				console.log(data.factMakerElement);
+				if (!$scope.tut.contentsSet && _.isEqual(data.factMakerElement, data.firstEl)) {
+					console.log("right element endDrag Set");
+					console.log(data.factMakerSet);
+					console.log(data.newGuy);
+					console.log(_.isEqual(data.factMakerSet, data.newGuy));
+					if (!_.isEqual(data.factMakerSet, data.newGuy)) {
+						console.log("don't have right set endDrag Set");
+						$scope.tut.flashSetIndex = $scope.tut.sets.indexOf(data.newGuy);
+						$rootScope.$broadcast("unflashFactMaker");
+					}
+				}
 				break;
 			case 9:
 				$scope.tut.flashSetIndex = $scope.tut.sets.indexOf(data.newGuy);
@@ -858,6 +1006,14 @@ app.controller("tutorialController", [ '$scope', '$rootScope', 'toastr', 'data',
 		$scope.tut.flashSetIndex = $scope.tut.sets.indexOf(data.newGuy);
 	});
 
+	$rootScope.$on("flashSet", function (ev, update) {
+		$scope.tut.flashSetIndex = data.sets.indexOf(update.set);
+	});
+
+	$rootScope.$on("unflashSets", function (ev) {
+		console.log("unflash sets");
+		$scope.flashSetIndex = null;
+	});
 	// $rootScope.$on("publishFacts", function (ev, update) {
 	// 	// $scope.tut.facts = update.facts;
 

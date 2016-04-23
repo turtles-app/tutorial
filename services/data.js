@@ -10,7 +10,8 @@ app.factory("data", ['$rootScope', function($rootScope) {
 	this.left = null;
 	this.right = null;
 	this.factInfo = null;
-
+	this.factMakerElement = null;
+	this.factMakerSet = null;
 	// this.selectedElements = [];
 	// this.contentsSet = null;
 	// this.elFlash = true;

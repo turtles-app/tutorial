@@ -36,6 +36,7 @@ app.controller("factController", ['$scope', '$rootScope', 'toastr', 'data', func
 			self.flash = false;
 			self.flashingFacts = [];
 			data.updateScopes();
+			$rootScope.$broadcast("clearFactMaker");
 			$scope.$apply();
 
 			switch (data.completeSteps) {

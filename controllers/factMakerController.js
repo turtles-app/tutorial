@@ -7,6 +7,7 @@ app.controller("factMakerController", ['$scope', '$rootScope', 'toastr', 'data',
 	this.flash = false;
 
 
+
 	this.dropAllowed = function () {
 		switch (dragData.type) {
 			case 'element':
@@ -39,8 +40,10 @@ app.controller("factMakerController", ['$scope', '$rootScope', 'toastr', 'data',
 						var txt	= "We want to say that " + data.firstEl.name + " is in " + data.newGuy.strEquivalents[data.newGuy.eqActiveIndex] + ". Drag ";
 						switch (data.completeSteps) {
 							case 8:
+								data.factMakerElement = self.element;
 								if (self.element.name === data.firstEl.name) {
 									if (!self.set) {
+										$rootScope.$broadcast("flashSet", {set: data.newGuy});
 										toastr.clear(openToasts.pop());
 										openToasts.push(toastr.success(txt + data.newGuy.strEquivalents[data.newGuy.eqActiveIndex] + " into the FACT maker.", "Well Done",
 											{
@@ -101,9 +104,11 @@ app.controller("factMakerController", ['$scope', '$rootScope', 'toastr', 'data',
 							var txt	= "We want to say that " + data.firstEl.name + " is in " + data.newGuy.strEquivalents[data.newGuy.eqActiveIndex];
 							switch (data.completeSteps) {
 								case 8:
+									data.factMakerSet = data.sets[dragData.index];
+									console.log("set factMaker set");
+									console.log(data.factMakerSet);
 									if (self.element) {
 										if (_.isEqual(self.set, data.newGuy)) {
-
 											if (_.isEqual(self.element, data.firstEl) ) {
 												toastr.clear(openToasts.pop());
 												openToasts.push(toastr.success("Our FACT maker now says that " + data.firstEl.name + " is in " + data.newGuy.strEquivalents[data.newGuy.eqActiveIndex] + ". Now you must select your justifications.", "Excelent!", 
@@ -268,4 +273,19 @@ app.controller("factMakerController", ['$scope', '$rootScope', 'toastr', 'data',
 				break;
 		}
 	};
+
+	$rootScope.$on("clearFactMaker", function (ev) {
+		console.log("clearing fact maker");
+		self.justifications = [];
+		self.element = null;
+		self.set = null;
+	});
+
+	$rootScope.$on("flashFactMaker", function (ev) {
+		self.flash = true;
+	});
+
+	$rootScope.$on("unflashFactMaker", function (ev) {
+		self.flash = false;
+	});
 }]);

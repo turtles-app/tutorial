@@ -101,7 +101,6 @@
 				<div id="elText" ng-show="tut.completeSteps==0">
 					This is an element. Its name is x!
 				</div>
-				
 				<div ng-repeat="element in tut.elements" id="{{element.name}}" class="element" draggable="true" ng-class="{flashInf: tut.elFlash || tut.elementsFlashing.indexOf(element) >= 0}" ondragstart="angular.element(getElementById('wrapper')).scope().tut.dragEl(event)" ondragend="angular.element(getElementById('wrapper')).scope().tut.endDragEl(event)" index="{{$index}}" ng-style="{'background-color': element.color, 'opacity': element.opacity, 'border':element.border}" >
 					<div class="elName" >{{element.name}}</div>
 				</div>

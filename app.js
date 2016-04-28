@@ -501,9 +501,7 @@ app.controller("tutorialController", [ '$scope', '$rootScope', 'toastr', 'data',
 
 						if (res.elements.indexOf(data.z) >= 0) {
 							var extraElementNames = [];
-							console.log("Logging elements in interesection res");
 							res.elements.forEach(function (element) {
-								console.log(element);
 								if (!_.isEqual(element, data.z)) {
 									extraElementNames.push(element.name);
 								}
@@ -511,14 +509,23 @@ app.controller("tutorialController", [ '$scope', '$rootScope', 'toastr', 'data',
 							var extraLen = extraElementNames.length;
 							if (extraLen === 0) { //Winning move
 								toastr.clear(openToasts.pop());
+
 								data.completeSteps = 11;
+								data.left = tempInt1;
+								data.right = tempInt2;
+								data.newGuy = res;
+								var fact1 = data.findFact(data.z, true, data.left, data.facts);
+								var fact2 = data.findFact(data.z, true, data.right, data.facts);
+
 								data.updateScopes();
 								openToasts.push(toastr.success("Your new intersection only has z", "Awesome!",
 									{
 										onHidden: function () {
 											toastr.clear(openToasts.pop());
 											data.tab = 'fact';
+											// var fact1 = data.findFact(data.z, true, )
 											data.updateScopes();
+
 											openToasts.push(toastr.info("Let's prove that z is in " + res.strEquivalents[res.eqActiveIndex]), "How do we know that?", 
 												{
 													onHidden: function () {
@@ -785,17 +792,17 @@ app.controller("tutorialController", [ '$scope', '$rootScope', 'toastr', 'data',
 			case 9:
 				if (_.isEqual($scope.tut.contentsSet, data.newGuy) ) {
 					data.completeSteps = 10;
-					$scope.tut.contentsSet = null;
-					$scope.tut.inspectorFacts = [];
-					$rootScope.$broadcast("clearInspector");					
-					$scope.tut.clearElementStyles();		
-					data.tab = 'intersection';			
-					data.updateScopes();
 					toastr.clear(openToasts.pop());
 					openToasts.push(toastr.success("With your new fact, the inspector can show you what's inside of " + data.newGuy.strEquivalents[data.newGuy.eqActiveIndex] + ".", "Good", 
 						{
 							onHidden: function () {
+								$scope.tut.contentsSet = null;
+								$scope.tut.inspectorFacts = [];
 								openToasts.pop();
+								$rootScope.$broadcast("clearInspector");					
+								$scope.tut.clearElementStyles();		
+								data.tab = 'intersection';			
+								data.updateScopes();
 								$scope.tut.elementsFlashing = [];
 								$scope.tut.flashSetIndex = null;
 								openToasts.push(toastr.info("Can you make an intersection that has z in it?", 
@@ -908,7 +915,6 @@ app.controller("tutorialController", [ '$scope', '$rootScope', 'toastr', 'data',
 				$scope.tut.contentsFlash = true;
 				break;
 			case 8:
-				// console.log(data.factMakerSet);
 				if (_.isEqual(data.sets[dragData.index], data.newGuy)) {
 					$scope.tut.flashSetIndex = null;
 					$rootScope.$broadcast("flashFactMaker");
@@ -930,15 +936,8 @@ app.controller("tutorialController", [ '$scope', '$rootScope', 'toastr', 'data',
 				$scope.tut.flashSetIndex = $scope.tut.sets.length - 1;	
 				break;
 			case 8:
-				console.log("case 8");
-				console.log(data.factMakerElement);
 				if (!$scope.tut.contentsSet && _.isEqual(data.factMakerElement, data.firstEl)) {
-					console.log("right element endDrag Set");
-					console.log(data.factMakerSet);
-					console.log(data.newGuy);
-					console.log(_.isEqual(data.factMakerSet, data.newGuy));
 					if (!_.isEqual(data.factMakerSet, data.newGuy)) {
-						console.log("don't have right set endDrag Set");
 						$scope.tut.flashSetIndex = $scope.tut.sets.indexOf(data.newGuy);
 						$rootScope.$broadcast("unflashFactMaker");
 					}
@@ -1011,7 +1010,6 @@ app.controller("tutorialController", [ '$scope', '$rootScope', 'toastr', 'data',
 	});
 
 	$rootScope.$on("unflashSets", function (ev) {
-		console.log("unflash sets");
 		$scope.flashSetIndex = null;
 	});
 	// $rootScope.$on("publishFacts", function (ev, update) {

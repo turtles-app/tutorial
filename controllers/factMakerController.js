@@ -97,6 +97,41 @@ app.controller("factMakerController", ['$scope', '$rootScope', 'toastr', 'data',
 										));									
 								}
 							break; // completeSteps 8 case
+						case 11:
+							toastr.clear(openToasts.pop());
+							if (_.isEqual(self.element, data.z)) {
+								if (_.isEqual(self.set, data.newGuy)) { //Had correct set
+									if (self.justifications === 2 ) { //Have enough facts
+										self.flash = true;
+										var txt = "Our FACT now says that z is in " + self.set.strEquivalents[self.set.eqActiveIndex] + " and we have the justifications to prove it! Drag the new FACT into the FACTS";
+									} else { //Missing Facts
+										var txt = "Our new FACT now says that z is in " + self.set.strEquivalents[self.set.eqActiveIndex] + ". Now drag in your justifications.";
+									}
+
+								}
+								//  else if (self.set) { //Had wrong set
+								// 	var txt = ""
+								// }
+								 else { // Was missing set
+									var txt = "We want to say that z is in " + data.newGuy.strEquivalents[data.newGuy.eqActiveIndex] + ". Drag " + data.newGuy.strEquivalents[data.newGuy.eqActiveIndex] + " into the FACT maker"; 
+								}
+								openToasts.push(toastr.success(txt, "Good.", 
+									{
+										onHidden: function () {
+											openToasts.pop();
+										}
+									}));
+
+								openToasts.push(toastr.success)
+							} else { // Dropped wrong element
+								openToasts.push(toastr.warning("We want to say that z is in " + data.newGuy.strEquivalents[data.newGuy.eqActiveIndex] + ". Drag z into the FACT Maker", "Nice Try",
+									{
+										onHidden: function () {
+											openToasts.pop();
+										}
+									}));
+							}
+							break;
 						}
 						break; // 'element' case
 
@@ -105,8 +140,6 @@ app.controller("factMakerController", ['$scope', '$rootScope', 'toastr', 'data',
 							switch (data.completeSteps) {
 								case 8:
 									data.factMakerSet = data.sets[dragData.index];
-									console.log("set factMaker set");
-									console.log(data.factMakerSet);
 									if (self.element) {
 										if (_.isEqual(self.set, data.newGuy)) {
 											if (_.isEqual(self.element, data.firstEl) ) {
@@ -174,7 +207,43 @@ app.controller("factMakerController", ['$scope', '$rootScope', 'toastr', 'data',
 										} 
 									}
 									break; // completeSteps 8 case
-							}
+
+									case 11:
+										toastr.clear(openToasts.pop());
+										if (_.isEqual(self.set, data.newGuy)) { //dropped correct set
+											if (_.isEqual(self.element, data.z)) {
+												var txt = "Our FACT now says that z is in " + data.newGuy.strEquivalents[data.newGuy.eqActiveIndex];
+												if (self.justifications.length < 2) { // Missing Facts
+													txt = txt + ". Now drag in the relevant FACTS";
+												} else { //Have all facts facts
+													txt = txt + ", and we have both of our justifications. Now drag our new FACT into the FACTS on the left. ";
+													self.flash = true;
+												}
+											} else  if (self.element) { //Wrong element
+												var txt = "We want to say that z is in " + self.set.strEquivalents[self.set.eqActiveIndex] + ". Drag z into the FACT maker";
+												// openToasts.push(toastr.success());
+											} else { //Missing element
+												// openToasts.push(toastr.)
+												var txt = "Our FACT will say that something is in " + data.newGuy.strEquivalents[data.newGuy.eqActiveIndex] + ", but what? Drag z into the FACT Maker.";
+											}
+											openToasts.push(toastr.success(txt, "Nice",
+												{	
+													onHidden: function () {
+														openToasts.pop();
+													}
+												}
+											));
+										} else { //dropped irrelevant set
+											openToasts.push(toastr.warning("We want to prove that z is in " + data.newGuy.strEquivalents[data.newGuy.eqActiveIndex] + ". Drag " + data.newGuy.strEquivalents[data.newGuy.eqActiveIndex] + " into the FACT maker", "Not Quite",
+												{
+													onHidden: function () {
+														openToasts.pop();
+													}
+												}
+											));
+										}									
+										break;
+							} 
 							break;
 				}
 				break; // 'element', or 'set' case
@@ -235,7 +304,56 @@ app.controller("factMakerController", ['$scope', '$rootScope', 'toastr', 'data',
 							}
 						}
 						break; // Seteps = 8
+					case 11:
+						var fact1 = data.findFact(data.z, true, data.left, data.facts);
+						var fact2 = data.findFact(data.z, true, data.right, data.facts);
+						self.expectedJustifications = [fact1, fact2];
+						if (self.expectedJustifications.indexOf(data.facts[dragData.index]) >= 0) {
+							toastr.clear(openToasts.pop());
+							self.justifications.push(data.facts.splice(dragData.index, 1)[0]);
+							data.updateScopes();
+							switch (self.justifications.length) {
+								case 1: // 1/2 relevant facts dropped
+									openToasts.push(toastr.success("Solid. We need one more fact to prove that z is in " + data.newGuy.strEquivalents[data.newGuy.eqActiveIndex], "1/2 Justifications",
+									{
+										onHidden: function () {
+											openToasts.pop();
+										}
+									} ));
+									break;
+								case 2: // 2/2 relevant facts dropped
+									self.flash = true;
+									data.completeSteps = 11;
+									openToasts.push(toastr.success("These two facts justify our new fact. We can conjur the new fact by dragging it into the FACTS on the left", "2/2 Justifications", 
+										{
+											onHidden: function () {
+												openToasts.pop();
+											}
+										}
+										))
+									break;
+							}
+						} else { //irrelevent fact
+							toastr.clear(openToasts.pop());
+							if (data.facts[dragData.index].elementName != 'z') { //Wrong element
+								openToasts.push(toastr.warning("That fact is about the element " + data.facts[dragData.index].elementName + ", but we need to use one about z.", "Almost", 
+								{
+									onHidden: function () {
+										openToasts.pop();
+									}
+								}));
+							} else { //Wrong set
+								openToasts.push(toastr.warning("That fact is about the set " + data.facts[dragData.index].setSyntax + ", but we need one that's about " + data.left.strEquivalents[data.left.eqActiveIndex] + ", or about " + data.right.strEquivalents[data.right.eqActiveIndex], "Almost",
+									{
+										onHidden: function () {
+											openToasts.pop();
+										}
+									}));
+							}
+						}
+						break;
 					default:
+
 						break; //default Steps
 				}
 				break;
@@ -251,6 +369,7 @@ app.controller("factMakerController", ['$scope', '$rootScope', 'toastr', 'data',
 		};
 		switch (data.completeSteps) {
 			case 8:
+			case 11:
 				if (self.flash) {
 					self.flash = false;
 					$rootScope.$broadcast("toggleFlashFacts");
@@ -268,14 +387,19 @@ app.controller("factMakerController", ['$scope', '$rootScope', 'toastr', 'data',
 					self.flash = true;
 					$scope.$apply();
 				} else {
-					console.log("improper fact maker");
+				}
+				break;
+			case 11:
+				$rootScope.$broadcast("toggleFlashFacts");
+				if (self.justifications.length === 2 && _.isEqual(self.set, data.newGuy) && _.isEqual(self.element, data.z)) {
+					self.flash = true;
+					$scope.$apply();
 				}
 				break;
 		}
 	};
 
 	$rootScope.$on("clearFactMaker", function (ev) {
-		console.log("clearing fact maker");
 		self.justifications = [];
 		self.element = null;
 		self.set = null;

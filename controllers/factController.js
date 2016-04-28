@@ -62,6 +62,20 @@ app.controller("factController", ['$scope', '$rootScope', 'toastr', 'data', func
 							}
 						}
 					));
+					break; // 8 completed steps case
+				case 11:
+					if (newFact.elementName === 'z' && _.isEqual(newFact.setSyntax, data.newGuy.equivalents[data.newGuy.eqActiveIndex]) && newFact.isIn) {
+						data.completeSteps = 12;
+						data.updateScopes();
+						toastr.clear(openToasts.pop());
+						openToasts.push(toastr.success("You're the master of truth!", "You Win", 
+							{
+								onHidden: function () {
+									openToasts.pop();
+								}
+							}
+						));
+					}
 					break;
 			}
 		}

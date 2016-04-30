@@ -75,6 +75,10 @@
 
 }
 
+.set p {
+	position: absolute;
+	bottom: 50%;
+}
 #elements {
 	position: absolute;
 	display: inline-block;

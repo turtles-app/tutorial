@@ -55,13 +55,13 @@
 				<div id="intersection-controller" ng-controller="intersectionController as intersect">
 					<div ng-show="intersect.tab ==='intersection'">
 						<div id="intersect1" ry-droppable drop-allowed="intersect.dropAllowed" drop="intersect.dropSet1">
-							<div ng-if="intersect.set1" class="intersect-name">{{intersect.set1.strEquivalents[0]}}</div>
+							<div ng-if="intersect.set1" class="intersect-name">{{intersect.set1.strEquivalents[intersect.set1.eqActiveIndex]}}</div>
 							<img class="intersect-full"  ng-if="intersect.set1" ng-src="./img/intersection-{{intersect.setColors[intersect.groupNames.indexOf(intersect.set1.groupName)]}}.png" ng-style="{opacity: intersect.opacity}">
 						</div>
 						<div id="intersect-middle" ng-if="intersect.set1 && intersect.set2" ry-draggable type="'intersection'" index="0" class="flashInf"></div>
 						<div id="intersect2" ry-droppable drop-allowed="intersect.dropAllowed" drop="intersect.dropSet2">
 							<div ng-if="intersect.set2" class="intersect-name">
-								{{intersect.set2.strEquivalents[0]}}
+								{{intersect.set2.strEquivalents[intersect.set2.eqActiveIndex]}}
 							</div>
 							<img class="intersect-full"  ng-if="intersect.set2" ng-src="./img/intersection-{{intersect.setColors[intersect.groupNames.indexOf(intersect.set2.groupName)]}}.png" ng-style="{opacity: intersect.opacity}">
 						</div>
@@ -94,7 +94,9 @@
 			</div>
 			<div id="sets" droppable-sets  drop="dropIntoSets" dragover="dragOverSets" ng-class="{flashInf: tut.setsFlash}">
 				<h1>Sets</h1>
-				<div ng-repeat="set in tut.sets"  id="{{set.equivalents[set.eqActiveIndex]}}"  index="{{$index}}" class="set" ng-class="{flashInf: tut.flashSetIndex===$index}" draggable="true" ondragstart="angular.element(getElementById('wrapper')).scope().tut.dragSet(event)" ondragend="angular.element(getElementById('wrapper')).scope().tut.endDragSet(event)">{{set.strEquivalents[set.eqActiveIndex]}}</div>
+				<div ng-repeat="set in tut.sets"  id="{{set.equivalents[set.eqActiveIndex]}}"  index="{{$index}}" class="set" ng-class="{flashInf: tut.flashSetIndex===$index}" draggable="true" ondragstart="angular.element(getElementById('wrapper')).scope().tut.dragSet(event)" ondragend="angular.element(getElementById('wrapper')).scope().tut.endDragSet(event)">
+					<p ng-click="set.eqActiveIndex = (set.eqActiveIndex + 1) % set.equivalents.length">{{set.strEquivalents[set.eqActiveIndex]}}</p>
+				</div>
 			</div>
 			<div id="elements">
 				<h1>Elements</h1>

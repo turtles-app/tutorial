@@ -386,6 +386,7 @@ app.controller("tutorialController", [ '$scope', '$rootScope', 'toastr', 'data',
 									onHidden: function () {
 										data.sets.pop();
 										data.sets[data.sets.indexOf(copiedSet)].equivalents.push(newSet.equivalents[0]);
+										data.sets[data.sets.indexOf(copiedSet)].strEquivalents.push(stringifySyntax(newSet.equivalents[0]));
 										data.sets[data.sets.indexOf(copiedSet)].eqActiveIndex = data.sets[data.sets.indexOf(copiedSet)].equivalents.length - 1;
 										data.updateScopes();
 										openToasts.pop();
@@ -637,32 +638,40 @@ app.controller("tutorialController", [ '$scope', '$rootScope', 'toastr', 'data',
 								$scope.tut.elements.sort(sortGroup);
 								data.elements = $scope.tut.elements;
 								data.updateScopes();								
-								$scope.tut.customSetName = '';
-
-								// if (setIsACopy) {
-								// 	openToasts.push(toastr.info("Your new set, " + newSet.equivalents[0] + ", has the same elements as  " + copiedSet.equivalents[copiedSet.eqActiveIndex] + ". They are the same set. Click a set's name to switch between its nicknames", "Interesting.", 
-								// 	{
-								// 		onHidden: function () {
-								// 			$scope.tut.sets.pop();
-								// 			$scope.tut.sets[$scope.tut.sets.indexOf(copiedSet)].equivalents.push(newSet.equivalents[0]);
-								// 			$scope.tut.sets[$scope.tut.sets.indexOf(copiedSet)].eqActiveIndex = $scope.tut.sets[$scope.tut.sets.indexOf(copiedSet)].equivalents.length - 1;
-								// 			openToasts.pop();
-								// 		}
-								// 	}));
-								// }						
+								$scope.tut.customSetName = '';					
 
 								switch ($scope.tut.sets.length) {
 									case 2:
 										data.completeSteps = 4;
 										data.updateScopes();
 										toastr.clear(openToasts.pop());
-										openToasts.push(toastr.success("You made a new set called " + newSet.equivalents[0] + "! Drag it into the Set Inspector",
+										if (setIsACopy) {
+											openToasts.push(toastr.info("Your new set, " + newSet.equivalents[0] + ", has the same elements as  " + copiedSet.equivalents[copiedSet.eqActiveIndex] + ". They are the same set. Click a set's name to switch between its nicknames", "Interesting.", 
 											{
 												onHidden: function () {
 													openToasts.pop();
-													$scope.tut.flashSetIndex = 1;
+													openToasts.push(toastr.warning("Make a new set with different elements.", "Try again",
+													{
+														onHidden: function () {
+															openToasts.pop();
+														}
+													}));
+													data.sets.pop();
+													data.sets[data.sets.indexOf(copiedSet)].equivalents.push(newSet.equivalents[0]);
+													data.sets[data.sets.indexOf(copiedSet)].strEquivalents.push(stringifySyntax(newSet.equivalents[0]));
+													data.sets[data.sets.indexOf(copiedSet)].eqActiveIndex = data.sets[data.sets.indexOf(copiedSet)].equivalents.length - 1;
+													data.updateScopes();
 												}
 											}));
+										} else {										
+											openToasts.push(toastr.success("You made a new set called " + newSet.equivalents[0] + "! Drag it into the Set Inspector",
+												{
+													onHidden: function () {
+														openToasts.pop();
+														$scope.tut.flashSetIndex = 1;
+													}
+												}));
+										}										
 										break;
 
 									break;
@@ -805,7 +814,7 @@ app.controller("tutorialController", [ '$scope', '$rootScope', 'toastr', 'data',
 								data.updateScopes();
 								$scope.tut.elementsFlashing = [];
 								$scope.tut.flashSetIndex = null;
-								openToasts.push(toastr.info("Can you make an intersection that has z in it?", 
+								openToasts.push(toastr.info("Can you make an intersection that has ONLY z in it?", 
 									{
 										onHidden: function () {
 											openToasts.pop();

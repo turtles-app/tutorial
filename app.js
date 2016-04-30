@@ -7,7 +7,6 @@ var dragData = {
 };
 
 openToasts = [];
-
 //Comparison function used to sort a group of sets/elements
 var sortGroup = function (a, b) {
 	return a.groupIndex - b.groupIndex;
@@ -267,7 +266,7 @@ app.controller("tutorialController", [ '$scope', '$rootScope', 'toastr', 'data',
 		}));
 	};
 
-	$scope.dropIntoSets = function (id) {
+	$scope.dropIntoSets = function (id) { 
 		switch ($scope.tut.completeSteps) {
 			//Dragging bob into sets
 			case 1:
@@ -322,8 +321,8 @@ app.controller("tutorialController", [ '$scope', '$rootScope', 'toastr', 'data',
 						newSet.groupIndex = $scope.tut.sets.length;
 
 
-					data.sets.forEach(function(set) {
-							if (_.isEqual(set.elements, newSet.elements)) {
+						data.sets.forEach(function(set) {
+							if (_.isEmpty(_.xor(set.elements, newSet.elements))) {
 								setIsACopy = true;
 								copiedSet = set;
 							}
@@ -336,6 +335,28 @@ app.controller("tutorialController", [ '$scope', '$rootScope', 'toastr', 'data',
 						data.updateScopes();						
 						$scope.tut.customSetName = '';
 						data.publishSet(newSet);
+
+
+						if (setIsACopy) {
+							openToasts.push(toastr.info("Your new set, " + newSet.equivalents[0] + ", has the same elements as  " + copiedSet.equivalents[copiedSet.eqActiveIndex] + ". They are the same set. Click a set's name to switch between its nicknames", "Interesting.", 
+							{
+								onHidden: function () {
+									openToasts.pop();
+									openToasts.push(toastr.warning("Make a new set with different elements.", "Try again",
+									{
+										onHidden: function () {
+											openToasts.pop();
+											data.sets.pop();
+											data.sets[data.sets.indexOf(copiedSet)].equivalents.push(newSet.equivalents[0]);
+											data.sets[data.sets.indexOf(copiedSet)].strEquivalents.push(stringifySyntax(newSet.equivalents[0]));
+											data.sets[data.sets.indexOf(copiedSet)].eqActiveIndex = data.sets[data.sets.indexOf(copiedSet)].equivalents.length - 1;
+											data.updateScopes();
+										}
+									}));
+								}
+							}));
+						}
+
 					} else {
 						toastr.clear(openToasts.pop());
 						openToasts.push(toastr.warning("You must name your set first. Type a name in the text box.", "Nice Try"));
@@ -380,19 +401,19 @@ app.controller("tutorialController", [ '$scope', '$rootScope', 'toastr', 'data',
 					{
 						onHidden: function () {
 							openToasts.pop();
-							if (setIsACopy) {
-								openToasts.push(toastr.info("Your new set, " + newSet.equivalents[0] + ", has the same elements as  " + copiedSet.equivalents[copiedSet.eqActiveIndex] + ". They are the same set. Click a set's name to switch between its nicknames", "Interesting.", 
-								{
-									onHidden: function () {
-										data.sets.pop();
-										data.sets[data.sets.indexOf(copiedSet)].equivalents.push(newSet.equivalents[0]);
-										data.sets[data.sets.indexOf(copiedSet)].strEquivalents.push(stringifySyntax(newSet.equivalents[0]));
-										data.sets[data.sets.indexOf(copiedSet)].eqActiveIndex = data.sets[data.sets.indexOf(copiedSet)].equivalents.length - 1;
-										data.updateScopes();
-										openToasts.pop();
-									}
-								}));
-							}
+							// if (setIsACopy) {
+							// 	openToasts.push(toastr.info("Your new set, " + newSet.equivalents[0] + ", has the same elements as  " + copiedSet.equivalents[copiedSet.eqActiveIndex] + ". They are the same set. Click a set's name to switch between its nicknames", "Interesting.", 
+							// 	{
+							// 		onHidden: function () {
+							// 			data.sets.pop();
+							// 			data.sets[data.sets.indexOf(copiedSet)].equivalents.push(newSet.equivalents[0]);
+							// 			data.sets[data.sets.indexOf(copiedSet)].strEquivalents.push(stringifySyntax(newSet.equivalents[0]));
+							// 			data.sets[data.sets.indexOf(copiedSet)].eqActiveIndex = data.sets[data.sets.indexOf(copiedSet)].equivalents.length - 1;
+							// 			data.updateScopes();
+							// 			openToasts.pop();
+							// 		}
+							// 	}));
+							// }
 						}
 					}));
 				}
@@ -694,11 +715,7 @@ app.controller("tutorialController", [ '$scope', '$rootScope', 'toastr', 'data',
 	$scope.dropIntoContents = function (index) {
 		$scope.tut.contentsSet = $scope.tut.sets[index];
 		var relevantFacts = data.relevantFacts($scope.tut.contentsSet);
-		// console.log("relevantFacts:");
-		// console.log(relevantFacts);
 		$scope.tut.inspectorFacts = relevantFacts;
-		// console.log("inspectorFacts:");
-		// console.log($scope.tut.inspectorFacts);
 		// $scope.$apply();
 		// $scope.tut.elements.forEach(function(element) {
 		// 	var opacity = element.opacity;
@@ -766,7 +783,6 @@ app.controller("tutorialController", [ '$scope', '$rootScope', 'toastr', 'data',
 							data.newGuy = $scope.tut.firstIntersectionRes;
 							data.left = $scope.tut.firstIntersection1;
 							data.right = $scope.tut.firstIntersection2;
-
 							var txt = "We know that " + data.firstEl.name + " must be in " + data.newGuy.strEquivalents[data.newGuy.eqActiveIndex] + ", because we know that it is in " + data.left.strEquivalents[data.left.eqActiveIndex] + ", and it is in " + data.right.strEquivalents[data.left.eqActiveIndex];
 							var flashFacts = [];
 							data.facts.forEach(function	(fact) {
